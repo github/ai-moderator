@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+# Setup licensed
+sudo apt update
+sudo apt install -y \
+	cmake pkg-config
+
+gem install licensed
+
+# NPM install
+npm install

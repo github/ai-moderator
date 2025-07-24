@@ -1,0 +1,37 @@
+# See: https://github.com/licensee/licensed/blob/main/docs/configuration.md
+
+sources:
+  npm: true
+
+allowed:
+  - apache-2.0
+  - bsd-2-clause
+  - bsd-3-clause
+  - isc
+  - mit
+  - cc0-1.0
+  - other
+
+ignored:
+  npm:
+    # Used by Rollup.js when building in GitHub Actions
+    - '@rollup/rollup-linux-x64-gnu'
+    - '@rollup/rollup-android-arm-eabi'
+    - '@rollup/rollup-android-arm64'
+    - '@rollup/rollup-darwin-arm64'
+    - '@rollup/rollup-darwin-x64'
+    - '@rollup/rollup-freebsd-arm64'
+    - '@rollup/rollup-freebsd-x64'
+    - '@rollup/rollup-linux-arm-gnueabihf'
+    - '@rollup/rollup-linux-arm-musleabihf'
+    - '@rollup/rollup-linux-arm64-gnu'
+    - '@rollup/rollup-linux-arm64-musl'
+    - '@rollup/rollup-linux-loongarch64-gnu'
+    - '@rollup/rollup-linux-powerpc64le-gnu'
+    - '@rollup/rollup-linux-riscv64-gnu'
+    - '@rollup/rollup-linux-riscv64-musl'
+    - '@rollup/rollup-linux-s390x-gnu'
+    - '@rollup/rollup-win32-arm64-msvc'
+    - '@rollup/rollup-win32-ia32-msvc'
+    - '@rollup/rollup-win32-x64-msvc'
+    - 'fsevents'
