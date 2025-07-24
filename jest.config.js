@@ -27,14 +27,15 @@ export default {
   testEnvironment: 'node',
   testMatch: ['**/*.test.ts'],
   testPathIgnorePatterns: ['/dist/', '/node_modules/'],
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.eslint.json',
+      useESM: true,
+      isolatedModules: true
+    }
+  },
   transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.eslint.json',
-        useESM: true
-      }
-    ]
+    '^.+\\.ts$': 'ts-jest'
   },
   verbose: true
 }

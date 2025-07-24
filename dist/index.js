@@ -41883,7 +41883,7 @@ async function connectToGitHubMCP(token) {
         }
     });
     const client = new Client({
-        name: 'ai-inference-action',
+        name: 'ai-spam-guard-action',
         version: '1.0.0',
         transport
     });
@@ -48639,7 +48639,7 @@ function isCredential(param) {
  *
  * If you need to make changes, please do so in the original source file, \{project-root\}/sources/custom
  */
-const logger = createClientLogger("ai-inference");
+const logger = createClientLogger("ai-spam-guard");
 
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -48863,7 +48863,7 @@ const tracingPolicyName = "inferenceTracingPolicy";
 function tracingPolicy() {
     const tracingClient = createTracingClient({
         namespace: "Microsoft.CognitiveServices",
-        packageName: "@azure/ai-inference-rest",
+        packageName: "@azure/ai-spam-guard-rest",
         packageVersion: SDK_VERSION,
     });
     return {
@@ -48924,7 +48924,7 @@ function createClient(endpointParam, credentials, _a = {}) {
     var _b, _c, _d, _e, _f, _g, _h, _j;
     var { apiVersion = "2024-05-01-preview" } = _a, options = __rest(_a, ["apiVersion"]);
     const endpointUrl = (_c = (_b = options.endpoint) !== null && _b !== void 0 ? _b : options.baseUrl) !== null && _c !== void 0 ? _c : `${endpointParam}`;
-    const userAgentInfo = `azsdk-js-ai-inference-rest/1.0.0-beta.6`;
+    const userAgentInfo = `azsdk-js-ai-spam-guard-rest/1.0.0-beta.6`;
     const userAgentPrefix = options.userAgentOptions && options.userAgentOptions.userAgentPrefix
         ? `${options.userAgentOptions.userAgentPrefix} ${userAgentInfo}`
         : `${userAgentInfo}`;
@@ -49150,7 +49150,7 @@ function buildInferenceRequest(promptConfig, systemPrompt, prompt, modelName, ma
 async function simpleInference(request) {
     coreExports.info('Running simple inference without tools');
     const client = createClient(request.endpoint, new AzureKeyCredential(request.token), {
-        userAgentOptions: { userAgentPrefix: 'github-actions-ai-inference' }
+        userAgentOptions: { userAgentPrefix: 'github-actions-ai-spam-guard' }
     });
     const requestBody = {
         messages: request.messages,
@@ -49177,7 +49177,7 @@ async function simpleInference(request) {
 async function mcpInference(request, githubMcpClient) {
     coreExports.info('Running GitHub MCP inference with tools');
     const client = createClient(request.endpoint, new AzureKeyCredential(request.token), {
-        userAgentOptions: { userAgentPrefix: 'github-actions-ai-inference' }
+        userAgentOptions: { userAgentPrefix: 'github-actions-ai-spam-guard' }
     });
     // Start with the pre-processed messages
     const messages = [...request.messages];

@@ -1,64 +1,24 @@
-name: 'AI Inference'
-description: Generate an AI response based on a provided prompt
-author: 'GitHub'
-
-# Add your action's branding here. This will appear on the GitHub Marketplace.
+name: "ai-spam-guard"
+description: "Scan new issues and comments with OpenAI prompts; label or hide spam automatically."
+author: "GitHub"
 branding:
-  icon: 'message-square'
-  color: red
+  icon: "shield"
+  color: "purple"
 
-# Define your inputs here.
 inputs:
-  prompt:
-    description: The prompt for the model
-    required: false
-    default: ''
-  prompt-file:
-    description:
-      Path to a file containing the prompt (supports .txt and .prompt.yml
-      formats)
-    required: false
-    default: ''
-  input:
-    description: Template variables in YAML format for .prompt.yml files
-    required: false
-    default: ''
-  model:
-    description: The model to use
-    required: false
-    default: 'openai/gpt-4o'
-  endpoint:
-    description: The endpoint to use
-    required: false
-    default: 'https://models.github.ai/inference'
-  system-prompt:
-    description: The system prompt for the model
-    required: false
-    default: 'You are a helpful assistant'
-  system-prompt-file:
-    description: Path to a file containing the system prompt
-    required: false
-    default: ''
-  max-tokens:
-    description: The maximum number of tokens to generate
-    required: false
-    default: '200'
   token:
-    description: The token to use
+    description: "GitHub token with `issues`, `pull-requests`, and OpenAI API access"
     required: false
     default: ${{ github.token }}
-  enable-github-mcp:
-    description: Enable Model Context Protocol integration with GitHub tools
+  spam-label:
+    description: "Label to add when generic spam is detected"
     required: false
-    default: 'false'
-
-# Define your outputs here.
-outputs:
-  response:
-    description: The response from the model
-  response-file:
-    description: The file path where the response is saved
+    default: "spam"
+  ai-label:
+    description: "Label to add when AI-generated content is detected"
+    required: false
+    default: "ai-generated"
 
 runs:
-  using: node20
-  main: dist/index.js
+  using: "node16"
+  main: "dist/index.js"
