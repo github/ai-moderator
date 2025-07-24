@@ -2,8 +2,8 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as path from 'path'
 import { OpenAI } from 'openai'
-import { evaluateContent } from './prompt-service.js'
-import { addLabels, minimizeComment } from './github-service.js'
+import { evaluateContent } from './prompt.js'
+import { addLabels, minimizeComment } from './github.js'
 import { extractFromEvent, shouldProcess } from './content-extractor.js'
 
 async function run(): Promise<void> {

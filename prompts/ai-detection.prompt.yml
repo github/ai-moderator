@@ -32,30 +32,15 @@ jsonSchema: |-
           "type": "string",
           "description": "Detailed explanation of the analysis, including which AI-generated content indicators were considered and why the conclusion was reached"
         },
-        "is_ai_generated": {
+        "is_spam": {
           "type": "boolean",
           "description": "Whether the content is determined to be AI-generated (true) or human-written (false)"
-        },
-        "confidence": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Confidence score from 0 to 1 indicating how certain the model is about the classification"
-        },
-        "ai_indicators": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of specific AI-generated content indicators found in the text"
         }
       },
       "additionalProperties": false,
       "required": [
         "reasoning",
-        "is_ai_generated",
-        "confidence",
-        "ai_indicators"
+        "is_spam"
       ]
     }
   }

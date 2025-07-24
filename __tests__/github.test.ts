@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals'
-import { addLabels, minimizeComment } from '../src/github-service.js'
+import { addLabels } from '../src/github.js'
 
 // Mock the @actions/github module
 const mockOctokit = {

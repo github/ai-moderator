@@ -32,30 +32,15 @@ jsonSchema: |-
           "type": "string",
           "description": "Detailed explanation of the analysis, including which bot-like indicators were considered and why the conclusion was reached"
         },
-        "is_bot_like": {
+        "is_spam": {
           "type": "boolean",
           "description": "Whether the content appears to be bot-generated (true) or human-authored (false)"
-        },
-        "confidence": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Confidence score from 0 to 1 indicating how certain the model is about the classification"
-        },
-        "bot_indicators": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of specific bot-like behavior indicators found in the content"
         }
       },
       "additionalProperties": false,
       "required": [
         "reasoning",
-        "is_bot_like",
-        "confidence",
-        "bot_indicators"
+        "is_spam"
       ]
     }
   }

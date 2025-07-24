@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals'
 import { extractFromEvent, shouldProcess } from '../src/content-extractor.js'
 
 describe('Content Extractor Functions', () => {

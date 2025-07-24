@@ -124536,37 +124536,14 @@ async function evaluateContent(openai, promptsDir, content) {
         }
         try {
             const result = await runPrompt(openai, file, content);
-            // Extract the boolean result based on the response type
             let isDetected = false;
             if ('is_spam' in result) {
                 isDetected = result.is_spam;
             }
-            else if ('is_ai_generated' in result) {
-                isDetected = result.is_ai_generated;
-            }
-            else if ('contains_link_spam' in result) {
-                isDetected = result.contains_link_spam;
-            }
-            else if ('is_bot_like' in result) {
-                isDetected = result.is_bot_like;
-            }
             // Log the detailed results
             console.log(`\n=== ${basename$1(file)} ===`);
             console.log(`Result: ${isDetected}`);
-            console.log(`Confidence: ${result.confidence}`);
             console.log(`Reasoning: ${result.reasoning}`);
-            if ('spam_indicators' in result && result.spam_indicators.length > 0) {
-                console.log(`Spam indicators: ${result.spam_indicators.join(', ')}`);
-            }
-            if ('ai_indicators' in result && result.ai_indicators.length > 0) {
-                console.log(`AI indicators: ${result.ai_indicators.join(', ')}`);
-            }
-            if ('bot_indicators' in result && result.bot_indicators.length > 0) {
-                console.log(`Bot indicators: ${result.bot_indicators.join(', ')}`);
-            }
-            if ('suspicious_links' in result && result.suspicious_links.length > 0) {
-                console.log(`Suspicious links: ${result.suspicious_links.join(', ')}`);
-            }
             if (isDetected) {
                 if (isAIPrompt) {
                     flags.ai = true;
@@ -124577,8 +124554,8 @@ async function evaluateContent(openai, promptsDir, content) {
             }
         }
         catch (error) {
-            console.error(`Error evaluating prompt ${basename$1(file)}:`, error);
             // Continue with other prompts even if one fails
+            console.error(`Error evaluating prompt ${basename$1(file)}:`, error);
         }
     }
     return flags;

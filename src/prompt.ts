@@ -125,36 +125,6 @@ export async function runPrompt(
 }
 
 /**
- * Legacy function for backward compatibility
- * @deprecated Use runPrompt instead
- */
-export async function promptSaysTrue(
-  openai: OpenAI,
-  promptPath: string,
-  content: string
-): Promise<boolean> {
-  try {
-    const result = await runPrompt(openai, promptPath, content)
-
-    // Check different result types and extract the boolean value
-    if ('is_spam' in result) {
-      return result.is_spam
-    } else if ('is_ai_generated' in result) {
-      return result.is_ai_generated
-    } else if ('contains_link_spam' in result) {
-      return result.contains_link_spam
-    } else if ('is_bot_like' in result) {
-      return result.is_bot_like
-    }
-
-    return false
-  } catch (error) {
-    console.error(`Error in promptSaysTrue for ${promptPath}:`, error)
-    throw error
-  }
-}
-
-/**
  * Get all prompt files from a directory
  */
 export async function getPromptFiles(promptsDir: string): Promise<string[]> {
@@ -190,36 +160,15 @@ export async function evaluateContent(
     try {
       const result = await runPrompt(openai, file, content)
 
-      // Extract the boolean result based on the response type
       let isDetected = false
       if ('is_spam' in result) {
         isDetected = result.is_spam
-      } else if ('is_ai_generated' in result) {
-        isDetected = result.is_ai_generated
-      } else if ('contains_link_spam' in result) {
-        isDetected = result.contains_link_spam
-      } else if ('is_bot_like' in result) {
-        isDetected = result.is_bot_like
       }
 
       // Log the detailed results
       console.log(`\n=== ${basename(file)} ===`)
       console.log(`Result: ${isDetected}`)
-      console.log(`Confidence: ${result.confidence}`)
       console.log(`Reasoning: ${result.reasoning}`)
-
-      if ('spam_indicators' in result && result.spam_indicators.length > 0) {
-        console.log(`Spam indicators: ${result.spam_indicators.join(', ')}`)
-      }
-      if ('ai_indicators' in result && result.ai_indicators.length > 0) {
-        console.log(`AI indicators: ${result.ai_indicators.join(', ')}`)
-      }
-      if ('bot_indicators' in result && result.bot_indicators.length > 0) {
-        console.log(`Bot indicators: ${result.bot_indicators.join(', ')}`)
-      }
-      if ('suspicious_links' in result && result.suspicious_links.length > 0) {
-        console.log(`Suspicious links: ${result.suspicious_links.join(', ')}`)
-      }
 
       if (isDetected) {
         if (isAIPrompt) {
@@ -229,8 +178,8 @@ export async function evaluateContent(
         }
       }
     } catch (error) {
-      console.error(`Error evaluating prompt ${basename(file)}:`, error)
       // Continue with other prompts even if one fails
+      console.error(`Error evaluating prompt ${basename(file)}:`, error)
     }
   }
 
