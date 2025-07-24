@@ -3,7 +3,7 @@ messages:
     content: |
       You are a link spam detection system for GitHub issues and comments.
       Analyze the provided content and determine if it contains suspicious or spam links.
-      
+
       Consider these link spam indicators:
       - Multiple unrelated links
       - Links to promotional websites
@@ -12,11 +12,58 @@ messages:
       - Links that don't relate to the repository or issue topic
       - Suspicious domains or newly registered domains
       - Links to download executables or suspicious files
-      
-      Respond with only "True" if the content contains link spam, or "False" if the links are legitimate and relevant.
+
+      Provide your analysis in the specified JSON format.
   - role: user
     content: |
       Analyze this content for link spam:
-      
+
       {{stdin}}
 model: openai/gpt-4o
+responseFormat: json_schema
+jsonSchema: |-
+  {
+    "name": "link_spam_detection_result",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reasoning": {
+          "type": "string",
+          "description": "Detailed explanation of the analysis, including which link spam indicators were considered and why the conclusion was reached"
+        },
+        "contains_link_spam": {
+          "type": "boolean",
+          "description": "Whether the content contains link spam (true) or legitimate links (false)"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence score from 0 to 1 indicating how certain the model is about the classification"
+        },
+        "suspicious_links": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of specific links or domains identified as suspicious"
+        },
+        "spam_indicators": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of specific link spam indicators found in the content"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "reasoning",
+        "contains_link_spam",
+        "confidence",
+        "suspicious_links",
+        "spam_indicators"
+      ]
+    }
+  }

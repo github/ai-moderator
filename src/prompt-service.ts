@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises'
 import { join, basename } from 'path'
 import * as yaml from 'js-yaml'
-import type OpenAI from 'openai'
+import type { OpenAI } from 'openai'
 
 interface PromptMessage {
   role: 'system' | 'user' | 'assistant'
@@ -10,7 +10,46 @@ interface PromptMessage {
 
 interface PromptConfig {
   messages: PromptMessage[]
+  model?: string
+  responseFormat?: string
+  jsonSchema?: string
 }
+
+// Response interfaces for different detection types
+interface SpamDetectionResult {
+  reasoning: string
+  is_spam: boolean
+  confidence: number
+  spam_indicators: string[]
+}
+
+interface AIDetectionResult {
+  reasoning: string
+  is_ai_generated: boolean
+  confidence: number
+  ai_indicators: string[]
+}
+
+interface LinkSpamDetectionResult {
+  reasoning: string
+  contains_link_spam: boolean
+  confidence: number
+  suspicious_links: string[]
+  spam_indicators: string[]
+}
+
+interface BotDetectionResult {
+  reasoning: string
+  is_bot_like: boolean
+  confidence: number
+  bot_indicators: string[]
+}
+
+type DetectionResult =
+  | SpamDetectionResult
+  | AIDetectionResult
+  | LinkSpamDetectionResult
+  | BotDetectionResult
 
 /**
  * Load and parse a prompt YAML file
@@ -29,8 +68,65 @@ async function loadPrompt(promptPath: string): Promise<PromptConfig> {
 }
 
 /**
- * Run a single prompt through OpenAI and return true if the model
- * responded with "True" (case-insensitive).
+ * Run a single prompt through OpenAI and return the parsed JSON result
+ */
+export async function runPrompt(
+  openai: OpenAI,
+  promptPath: string,
+  content: string
+): Promise<DetectionResult> {
+  try {
+    const promptConfig = await loadPrompt(promptPath)
+
+    // Prepare messages by replacing {{stdin}} template with actual content
+    const messages = promptConfig.messages.map((msg) => {
+      return {
+        ...msg,
+        content: msg.content.replace('{{stdin}}', content)
+      }
+    })
+
+    // Prepare the API call parameters
+    const params: any = {
+      model: promptConfig.model || 'gpt-4o',
+      messages: messages,
+      temperature: 0 // Make responses deterministic
+    }
+
+    // Add JSON schema parameters if present
+    if (
+      promptConfig.responseFormat === 'json_schema' &&
+      promptConfig.jsonSchema
+    ) {
+      params.response_format = {
+        type: 'json_schema',
+        json_schema: JSON.parse(promptConfig.jsonSchema)
+      }
+    }
+
+    const response = await openai.chat.completions.create(params)
+
+    const output = response.choices[0]?.message?.content?.trim() || ''
+
+    try {
+      return JSON.parse(output) as DetectionResult
+    } catch (parseError) {
+      console.error(
+        `Error parsing JSON response from ${promptPath}:`,
+        parseError
+      )
+      console.error(`Raw response: ${output}`)
+      throw new Error(`Invalid JSON response from prompt: ${output}`)
+    }
+  } catch (error) {
+    console.error(`Error running prompt ${promptPath}:`, error)
+    throw error
+  }
+}
+
+/**
+ * Legacy function for backward compatibility
+ * @deprecated Use runPrompt instead
  */
 export async function promptSaysTrue(
   openai: OpenAI,
@@ -38,30 +134,22 @@ export async function promptSaysTrue(
   content: string
 ): Promise<boolean> {
   try {
-    const promptConfig = await loadPrompt(promptPath)
+    const result = await runPrompt(openai, promptPath, content)
 
-    // Prepare messages by appending the content to the last user message
-    const messages = promptConfig.messages.map((msg, index) => {
-      if (msg.role === 'user' && index === promptConfig.messages.length - 1) {
-        return {
-          ...msg,
-          content: msg.content + content
-        }
-      }
-      return msg
-    })
+    // Check different result types and extract the boolean value
+    if ('is_spam' in result) {
+      return result.is_spam
+    } else if ('is_ai_generated' in result) {
+      return result.is_ai_generated
+    } else if ('contains_link_spam' in result) {
+      return result.contains_link_spam
+    } else if ('is_bot_like' in result) {
+      return result.is_bot_like
+    }
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo', // Using a cost-effective model for spam detection
-      messages: messages,
-      max_tokens: 10, // We only need "True" or "False"
-      temperature: 0 // Make responses deterministic
-    })
-
-    const output = response.choices[0]?.message?.content?.trim() || ''
-    return output.toLowerCase().startsWith('true')
+    return false
   } catch (error) {
-    console.error(`Error running prompt ${promptPath}:`, error)
+    console.error(`Error in promptSaysTrue for ${promptPath}:`, error)
     throw error
   }
 }
@@ -100,10 +188,40 @@ export async function evaluateContent(
     }
 
     try {
-      const result = await promptSaysTrue(openai, file, content)
-      console.log(`${basename(file)} → ${result}`)
+      const result = await runPrompt(openai, file, content)
 
-      if (result) {
+      // Extract the boolean result based on the response type
+      let isDetected = false
+      if ('is_spam' in result) {
+        isDetected = result.is_spam
+      } else if ('is_ai_generated' in result) {
+        isDetected = result.is_ai_generated
+      } else if ('contains_link_spam' in result) {
+        isDetected = result.contains_link_spam
+      } else if ('is_bot_like' in result) {
+        isDetected = result.is_bot_like
+      }
+
+      // Log the detailed results
+      console.log(`\n=== ${basename(file)} ===`)
+      console.log(`Result: ${isDetected}`)
+      console.log(`Confidence: ${result.confidence}`)
+      console.log(`Reasoning: ${result.reasoning}`)
+
+      if ('spam_indicators' in result && result.spam_indicators.length > 0) {
+        console.log(`Spam indicators: ${result.spam_indicators.join(', ')}`)
+      }
+      if ('ai_indicators' in result && result.ai_indicators.length > 0) {
+        console.log(`AI indicators: ${result.ai_indicators.join(', ')}`)
+      }
+      if ('bot_indicators' in result && result.bot_indicators.length > 0) {
+        console.log(`Bot indicators: ${result.bot_indicators.join(', ')}`)
+      }
+      if ('suspicious_links' in result && result.suspicious_links.length > 0) {
+        console.log(`Suspicious links: ${result.suspicious_links.join(', ')}`)
+      }
+
+      if (isDetected) {
         if (isAIPrompt) {
           flags.ai = true
         } else if (isSpamPrompt) {
