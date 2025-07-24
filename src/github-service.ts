@@ -1,4 +1,4 @@
-import * as github from "@actions/github";
+import * as github from '@actions/github'
 
 /**
  * Add labels to an issue or PR (they share the same issue number).
@@ -9,13 +9,13 @@ export async function addLabels(
   issueNumber: number,
   labels: string[]
 ): Promise<void> {
-  if (labels.length === 0) return;
-  
+  if (labels.length === 0) return
+
   await octokit.rest.issues.addLabels({
     ...context.repo,
     issue_number: issueNumber,
-    labels,
-  });
+    labels
+  })
 }
 
 /**
@@ -28,9 +28,12 @@ export async function minimizeComment(
   const query = /* GraphQL */ `
     mutation ($nodeId: ID!) {
       minimizeComment(input: { subjectId: $nodeId, classifier: SPAM }) {
-        minimizedComment { isMinimized }
+        minimizedComment {
+          isMinimized
+        }
       }
-    }`;
-  
-  await octokit.graphql(query, { nodeId });
+    }
+  `
+
+  await octokit.graphql(query, { nodeId })
 }

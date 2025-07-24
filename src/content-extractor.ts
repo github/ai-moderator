@@ -19,7 +19,10 @@ export function extractFromEvent(context: typeof github.context): ContentInfo {
   if (event === 'issues' && context.payload.action === 'opened') {
     content = `${context.payload.issue?.title}\n${context.payload.issue?.body}`
     issueNumber = context.payload.issue?.number ?? null
-  } else if (event === 'issue_comment' && context.payload.action === 'created') {
+  } else if (
+    event === 'issue_comment' &&
+    context.payload.action === 'created'
+  ) {
     content = context.payload.comment?.body || ''
     issueNumber = context.payload.issue?.number ?? null
     commentNodeId = context.payload.comment?.node_id
