@@ -1,0 +1,103 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  models: read
+
+jobs:
+  test-typescript:
+    name: TypeScript Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Check Format
+        id: npm-format-check
+        run: npm run format:check
+
+      - name: Lint
+        id: npm-lint
+        run: npm run lint
+
+      - name: Test
+        id: npm-ci-test
+        run: npm run ci-test
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+  test-action:
+    name: GitHub Actions Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Test Local Action
+        id: test-action
+        continue-on-error: true
+        uses: ./
+        with:
+          prompt: hello
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Print Output
+        id: output
+        continue-on-error: true
+        run: echo "${{ steps.test-action.outputs.response }}"
+
+  test-action-prompt-file:
+    name: GitHub Actions Test with Prompt File
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Create Prompt File
+        run: echo "hello" > prompt.txt
+
+      - name: Create System Prompt File
+        run:
+          echo "You are a helpful AI assistant for testing." > system-prompt.txt
+
+      - name: Test Local Action with Prompt File
+        id: test-action-prompt-file
+        continue-on-error: true
+        uses: ./
+        with:
+          prompt-file: prompt.txt
+          system-prompt-file: system-prompt.txt
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Print Output
+        continue-on-error: true
+        run: |
+          echo "Response saved to: ${{ steps.test-action-prompt-file.outputs.response-file }}"
+          cat "${{ steps.test-action-prompt-file.outputs.response-file }}"
