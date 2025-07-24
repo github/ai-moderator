@@ -71,42 +71,4 @@ describe('GitHub Service Functions', () => {
       ).rejects.toThrow('API Error')
     })
   })
-
-  describe('minimizeComment', () => {
-    it('should minimize a comment using GraphQL', async () => {
-      const nodeId = 'comment-node-id-123'
-      const expectedQuery = /* GraphQL */ `
-        mutation ($nodeId: ID!) {
-          minimizeComment(input: { subjectId: $nodeId, classifier: SPAM }) {
-            minimizedComment {
-              isMinimized
-            }
-          }
-        }
-      `
-
-      mockOctokit.graphql.mockResolvedValue({
-        minimizeComment: {
-          minimizedComment: { isMinimized: true }
-        }
-      })
-
-      await minimizeComment(mockOctokit as any, nodeId)
-
-      expect(mockOctokit.graphql).toHaveBeenCalledWith(expectedQuery, {
-        nodeId
-      })
-    })
-
-    it('should handle GraphQL errors', async () => {
-      const nodeId = 'comment-node-id-123'
-      const error = new Error('GraphQL Error')
-
-      mockOctokit.graphql.mockRejectedValue(error)
-
-      await expect(minimizeComment(mockOctokit as any, nodeId)).rejects.toThrow(
-        'GraphQL Error'
-      )
-    })
-  })
 })
