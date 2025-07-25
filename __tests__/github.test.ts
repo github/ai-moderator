@@ -1,26 +1,34 @@
 import { jest } from '@jest/globals'
-import { addLabels } from '../src/github.js'
+import * as github from '@actions/github'
+import { addLabels } from '../src/github'
 
 // Mock the @actions/github module
+const mockAddLabels = jest.fn<() => Promise<unknown>>()
+const mockGraphql = jest.fn<() => Promise<unknown>>()
+
 const mockOctokit = {
   rest: {
     issues: {
-      addLabels: jest.fn() as jest.MockedFunction<any>
+      addLabels: mockAddLabels
     }
   },
-  graphql: jest.fn() as jest.MockedFunction<any>
-}
+  graphql: mockGraphql
+} as unknown as ReturnType<typeof github.getOctokit>
+
+// Type for our mock context
+type MockContext = typeof github.context
 
 const mockContext = {
   repo: {
     owner: 'test-owner',
     repo: 'test-repo'
   }
-}
+} as MockContext
 
 describe('GitHub Service Functions', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    mockAddLabels.mockClear()
+    mockGraphql.mockClear()
   })
 
   describe('addLabels', () => {
@@ -28,16 +36,11 @@ describe('GitHub Service Functions', () => {
       const issueNumber = 123
       const labels = ['spam', 'needs-review']
 
-      mockOctokit.rest.issues.addLabels.mockResolvedValue({})
+      mockAddLabels.mockResolvedValue({} as unknown)
 
-      await addLabels(
-        mockOctokit as any,
-        mockContext as any,
-        issueNumber,
-        labels
-      )
+      await addLabels(mockOctokit, mockContext, issueNumber, labels)
 
-      expect(mockOctokit.rest.issues.addLabels).toHaveBeenCalledWith({
+      expect(mockAddLabels).toHaveBeenCalledWith({
         owner: 'test-owner',
         repo: 'test-repo',
         issue_number: issueNumber,
@@ -49,14 +52,9 @@ describe('GitHub Service Functions', () => {
       const issueNumber = 123
       const labels: string[] = []
 
-      await addLabels(
-        mockOctokit as any,
-        mockContext as any,
-        issueNumber,
-        labels
-      )
+      await addLabels(mockOctokit, mockContext, issueNumber, labels)
 
-      expect(mockOctokit.rest.issues.addLabels).not.toHaveBeenCalled()
+      expect(mockAddLabels).not.toHaveBeenCalled()
     })
 
     it('should handle API errors', async () => {
@@ -64,10 +62,10 @@ describe('GitHub Service Functions', () => {
       const labels = ['spam']
       const error = new Error('API Error')
 
-      mockOctokit.rest.issues.addLabels.mockRejectedValue(error)
+      mockAddLabels.mockRejectedValue(error)
 
       await expect(
-        addLabels(mockOctokit as any, mockContext as any, issueNumber, labels)
+        addLabels(mockOctokit, mockContext, issueNumber, labels)
       ).rejects.toThrow('API Error')
     })
   })

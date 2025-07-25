@@ -7,13 +7,15 @@ jest.mock('@actions/core')
 jest.mock('@actions/github')
 
 const mockCore = core as jest.Mocked<typeof core>
-const mockGithub = github as jest.Mocked<typeof github>
 
 // Import the functions we want to test directly
 import { extractFromEvent, shouldProcess } from '../src/content-extractor.js'
 
 // Helper to create minimal context objects
-const createMockContext = (eventName: string, payload: any) =>
+const createMockContext = (
+  eventName: string,
+  payload: unknown
+): typeof github.context =>
   ({
     eventName,
     payload,

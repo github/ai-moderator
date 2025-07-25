@@ -87,7 +87,7 @@ export async function runPrompt(
     })
 
     // Prepare the API call parameters
-    const params: any = {
+    const params: OpenAI.Chat.Completions.ChatCompletionCreateParams = {
       model: promptConfig.model || 'gpt-4o',
       messages: messages,
       temperature: 0 // Make responses deterministic
