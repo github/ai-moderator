@@ -9,9 +9,6 @@ import { extractFromEvent, shouldProcess } from './content-extractor.js'
 
 async function run(): Promise<void> {
   try {
-    //------------------------------------------------------------
-    // 0. Inputs & setup
-    //------------------------------------------------------------
     const token = core.getInput('token')
     const __filename = fileURLToPath(import.meta.url)
     const __dirname = path.dirname(__filename)
@@ -19,25 +16,18 @@ async function run(): Promise<void> {
     const spamLabel = core.getInput('spam-label')
     const aiLabel = core.getInput('ai-label')
 
-    // Initialize services - use GitHub Models instead of OpenAI
     const openai = new OpenAI({
-      apiKey: token, // Use GitHub token instead of OpenAI API key
+      apiKey: token,
       baseURL: 'https://models.github.ai/inference'
     })
     const octokit = github.getOctokit(token)
 
-    //------------------------------------------------------------
-    // 1. Check if we should process this event
-    //------------------------------------------------------------
     if (!shouldProcess(github.context)) {
       const event = github.context.eventName
       core.info(`Nothing to do for event ${event}.`)
       return
     }
 
-    //------------------------------------------------------------
-    // 2. Extract content and identifiers
-    //------------------------------------------------------------
     const { content, issueNumber, commentNodeId } = extractFromEvent(
       github.context
     )
@@ -47,30 +37,30 @@ async function run(): Promise<void> {
       return
     }
 
-    //------------------------------------------------------------
-    // 3. Evaluate content against prompts
-    //------------------------------------------------------------
     core.info('Evaluating content for spam and AI-generated content...')
     const flags = await evaluateContent(openai, promptsDir, content)
 
     if (!flags.spam && !flags.ai) {
-      core.info('No spam detected ✅')
+      core.info('No spam or AI-generated content detected ✅')
       return
     }
 
-    //------------------------------------------------------------
-    // 4. Take action: label or hide
-    //------------------------------------------------------------
     const labels: string[] = []
-    if (flags.spam) labels.push(spamLabel)
-    if (flags.ai) labels.push(aiLabel)
 
-    if (issueNumber) {
+    // Only add labels to issues if the issue content itself has the problem
+    // (not if it's just a comment on the issue)
+    if (issueNumber && !commentNodeId) {
+      if (flags.spam) labels.push(spamLabel)
+      if (flags.ai) labels.push(aiLabel)
+    }
+
+    if (issueNumber && labels.length > 0) {
       await addLabels(octokit, github.context, issueNumber, labels)
       core.info(`Added labels [${labels.join(', ')}] to issue #${issueNumber}`)
     }
 
-    if (commentNodeId) {
+    // Only minimize comments if they are spam, not just AI-generated
+    if (commentNodeId && flags.spam) {
       await minimizeComment(octokit, commentNodeId)
       core.info(`Comment ${commentNodeId} minimized as spam`)
     }

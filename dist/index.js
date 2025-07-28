@@ -124632,59 +124632,48 @@ function shouldProcess(context) {
 
 async function run() {
     try {
-        //------------------------------------------------------------
-        // 0. Inputs & setup
-        //------------------------------------------------------------
         const token = coreExports.getInput('token');
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = require$$1$1.dirname(__filename);
         const promptsDir = require$$1$1.resolve(__dirname, '..', 'prompts'); // Use built-in prompts
         const spamLabel = coreExports.getInput('spam-label');
         const aiLabel = coreExports.getInput('ai-label');
-        // Initialize services - use GitHub Models instead of OpenAI
         const openai = new OpenAI({
-            apiKey: token, // Use GitHub token instead of OpenAI API key
+            apiKey: token,
             baseURL: 'https://models.github.ai/inference'
         });
         const octokit = githubExports.getOctokit(token);
-        //------------------------------------------------------------
-        // 1. Check if we should process this event
-        //------------------------------------------------------------
         if (!shouldProcess(githubExports.context)) {
             const event = githubExports.context.eventName;
             coreExports.info(`Nothing to do for event ${event}.`);
             return;
         }
-        //------------------------------------------------------------
-        // 2. Extract content and identifiers
-        //------------------------------------------------------------
         const { content, issueNumber, commentNodeId } = extractFromEvent(githubExports.context);
         if (!content.trim()) {
             coreExports.info('No text content found, skipping.');
             return;
         }
-        //------------------------------------------------------------
-        // 3. Evaluate content against prompts
-        //------------------------------------------------------------
         coreExports.info('Evaluating content for spam and AI-generated content...');
         const flags = await evaluateContent(openai, promptsDir, content);
         if (!flags.spam && !flags.ai) {
-            coreExports.info('No spam detected ✅');
+            coreExports.info('No spam or AI-generated content detected ✅');
             return;
         }
-        //------------------------------------------------------------
-        // 4. Take action: label or hide
-        //------------------------------------------------------------
         const labels = [];
-        if (flags.spam)
-            labels.push(spamLabel);
-        if (flags.ai)
-            labels.push(aiLabel);
-        if (issueNumber) {
+        // Only add labels to issues if the issue content itself has the problem
+        // (not if it's just a comment on the issue)
+        if (issueNumber && !commentNodeId) {
+            if (flags.spam)
+                labels.push(spamLabel);
+            if (flags.ai)
+                labels.push(aiLabel);
+        }
+        if (issueNumber && labels.length > 0) {
             await addLabels(octokit, githubExports.context, issueNumber, labels);
             coreExports.info(`Added labels [${labels.join(', ')}] to issue #${issueNumber}`);
         }
-        if (commentNodeId) {
+        // Only minimize comments if they are spam, not just AI-generated
+        if (commentNodeId && flags.spam) {
             await minimizeComment(octokit, commentNodeId);
             coreExports.info(`Comment ${commentNodeId} minimized as spam`);
         }
