@@ -22,6 +22,10 @@ inputs:
     description: 'Label to add when AI-generated content is detected'
     required: false
     default: 'ai-generated'
+  minimize-detected-comments:
+    description: 'Whether to minimize comments detected as spam'
+    required: false
+    default: 'true'
 
 runs:
   using: 'node16'

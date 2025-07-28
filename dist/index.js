@@ -124638,6 +124638,7 @@ async function run() {
         const promptsDir = require$$1$1.resolve(__dirname, '..', 'prompts'); // Use built-in prompts
         const spamLabel = coreExports.getInput('spam-label');
         const aiLabel = coreExports.getInput('ai-label');
+        const minimizeComments = coreExports.getBooleanInput('minimize-detected-comments');
         const openai = new OpenAI({
             apiKey: token,
             baseURL: 'https://models.github.ai/inference'
@@ -124673,7 +124674,8 @@ async function run() {
             coreExports.info(`Added labels [${labels.join(', ')}] to issue #${issueNumber}`);
         }
         // Only minimize comments if they are spam, not just AI-generated
-        if (commentNodeId && flags.spam) {
+        // and if minimize-detected-comments is enabled
+        if (commentNodeId && flags.spam && minimizeComments) {
             await minimizeComment(octokit, commentNodeId);
             coreExports.info(`Comment ${commentNodeId} minimized as spam`);
         }

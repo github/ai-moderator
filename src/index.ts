@@ -15,6 +15,7 @@ async function run(): Promise<void> {
     const promptsDir = path.resolve(__dirname, '..', 'prompts') // Use built-in prompts
     const spamLabel = core.getInput('spam-label')
     const aiLabel = core.getInput('ai-label')
+    const minimizeComments = core.getBooleanInput('minimize-detected-comments')
 
     const openai = new OpenAI({
       apiKey: token,
@@ -60,7 +61,8 @@ async function run(): Promise<void> {
     }
 
     // Only minimize comments if they are spam, not just AI-generated
-    if (commentNodeId && flags.spam) {
+    // and if minimize-detected-comments is enabled
+    if (commentNodeId && flags.spam && minimizeComments) {
       await minimizeComment(octokit, commentNodeId)
       core.info(`Comment ${commentNodeId} minimized as spam`)
     }

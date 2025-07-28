@@ -27,6 +27,7 @@ jobs:
       issues: write
       pull-requests: write
       models: read
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: github/ai-spam-guard
@@ -34,20 +35,26 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           spam-label: 'spam'
           ai-label: 'ai-generated'
+          minimize-detected-comments: true
 ```
 
 ### Configuration
 
-| Input        | Description                                            | Default               | Required |
-| ------------ | ------------------------------------------------------ | --------------------- | -------- |
-| `token`      | GitHub token with issues and pull-requests permissions | `${{ github.token }}` | No       |
-| `spam-label` | Label to add when generic spam is detected             | `spam`                | No       |
-| `ai-label`   | Label to add when AI-generated content is detected     | `ai-generated`        | No       |
+| Input                        | Description                                            | Default               | Required |
+| ---------------------------- | ------------------------------------------------------ | --------------------- | -------- |
+| `token`                      | GitHub token with issues and pull-requests permissions | `${{ github.token }}` | No       |
+| `spam-label`                 | Label to add when generic spam is detected             | `spam`                | No       |
+| `ai-label`                   | Label to add when AI-generated content is detected     | `ai-generated`        | No       |
+| `minimize-detected-comments` | Whether to minimize comments detected as spam          | `true`                | No       |
 
-### Environment Variables
+### Inference
 
-The action no longer requires external API keys - it uses the built-in GitHub
-token with `models: read` permission to access GitHub Models.
+The action does not require any external API keys for inference - it uses the
+built-in GitHub token with `models: read` permission to access GitHub Models.
+
+Every GitHub user has Github Models inference for free, but if you're running
+into rate limiting issues you can choose to
+[opt in to paid usage](https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-models).
 
 ## Detection Prompts
 
