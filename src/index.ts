@@ -16,6 +16,7 @@ async function run(): Promise<void> {
     const spamLabel = core.getInput('spam-label')
     const aiLabel = core.getInput('ai-label')
     const minimizeComments = core.getBooleanInput('minimize-detected-comments')
+    const customPromptPath = core.getInput('custom-prompt-path')
 
     const openai = new OpenAI({
       apiKey: token,
@@ -39,7 +40,12 @@ async function run(): Promise<void> {
     }
 
     core.info('Evaluating content for spam and AI-generated content...')
-    const flags = await evaluateContent(openai, promptsDir, content)
+    const flags = await evaluateContent(
+      openai,
+      promptsDir,
+      content,
+      customPromptPath
+    )
 
     if (!flags.spam && !flags.ai) {
       core.info('No spam or AI-generated content detected ✅')

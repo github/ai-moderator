@@ -36,16 +36,18 @@ jobs:
           spam-label: 'spam'
           ai-label: 'ai-generated'
           minimize-detected-comments: true
+          # custom-prompt-path: '.github/prompts/my-custom.prompt.yml'  # Optional
 ```
 
 ### Configuration
 
-| Input                        | Description                                            | Default               | Required |
-| ---------------------------- | ------------------------------------------------------ | --------------------- | -------- |
-| `token`                      | GitHub token with issues and pull-requests permissions | `${{ github.token }}` | No       |
-| `spam-label`                 | Label to add when generic spam is detected             | `spam`                | No       |
-| `ai-label`                   | Label to add when AI-generated content is detected     | `ai-generated`        | No       |
-| `minimize-detected-comments` | Whether to minimize comments detected as spam          | `true`                | No       |
+| Input                        | Description                                                                  | Default               | Required |
+| ---------------------------- | ---------------------------------------------------------------------------- | --------------------- | -------- |
+| `token`                      | GitHub token with issues and pull-requests permissions                       | `${{ github.token }}` | No       |
+| `spam-label`                 | Label to add when generic spam is detected                                   | `spam`                | No       |
+| `ai-label`                   | Label to add when AI-generated content is detected                           | `ai-generated`        | No       |
+| `minimize-detected-comments` | Whether to minimize comments detected as spam                                | `true`                | No       |
+| `custom-prompt-path`         | Path to a custom YAML prompt file in your repository (relative to repo root) | (none)                | No       |
 
 ### Inference
 
@@ -70,6 +72,78 @@ You can iterate on or tweak these prompts via the
 [Models tab](https://github.com/github/ai-spam-guard/models) on this repository.
 If you want to push an update to this prompt, please also include updated test
 data so we can see the effect of the prompt update.
+
+### Custom Prompts
+
+You can also provide your own custom prompt file in your repository using the
+`custom-prompt-path` input:
+
+```yaml
+- uses: github/ai-spam-guard
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    custom-prompt-path: '.github/prompts/my-custom-spam-detection.prompt.yml'
+```
+
+Custom prompt files should follow the same YAML format as the built-in prompts:
+
+```yaml
+messages:
+  - role: system
+    content: |
+      You are a content moderation system. Analyze the provided content
+      and determine if it violates repository guidelines.
+
+      Consider these indicators:
+      - Off-topic discussions
+      - Inappropriate language
+      - Spam or promotional content
+
+      Provide your analysis in the specified JSON format.
+  - role: user
+    content: |
+      Analyze this content:
+
+      {{stdin}}
+model: gpt-4o
+responseFormat: json_schema
+jsonSchema: |-
+  {
+    "name": "spam_detection_result",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reasoning": {
+          "type": "string",
+          "description": "Detailed explanation of the analysis"
+        },
+        "is_spam": {
+          "type": "boolean",
+          "description": "Whether the content violates guidelines"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["reasoning", "is_spam"]
+    }
+  }
+```
+
+**Notes:**
+
+- Custom prompts are treated as spam detection prompts by default (unless the
+  filename contains "ai-detection")
+- Custom prompts are evaluated **before** the built-in prompts
+- The `{{stdin}}` placeholder will be replaced with the actual content to
+  analyze
+- Custom prompts must return a JSON response with at least `reasoning` and
+  `is_spam` fields
+
+### Example Custom Prompt
+
+An example custom prompt file is included at
+`.github/prompts/example-custom.prompt.yml` that demonstrates the proper format
+and shows how to create repository-specific spam detection rules.
 
 ## Development
 

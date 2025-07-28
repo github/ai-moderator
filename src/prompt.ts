@@ -140,18 +140,42 @@ export async function getPromptFiles(promptsDir: string): Promise<string[]> {
 export async function evaluateContent(
   openai: OpenAI,
   promptsDir: string,
-  content: string
+  content: string,
+  customPromptPath?: string
 ): Promise<{ spam: boolean; ai: boolean }> {
   const files = await getPromptFiles(promptsDir)
   const flags = { spam: false, ai: false }
 
-  for (const file of files) {
+  // Add custom prompt file if provided
+  const allFiles = [...files]
+  if (customPromptPath && customPromptPath.trim()) {
+    try {
+      // Resolve custom prompt path relative to workspace root
+      const workspaceRoot = process.env.GITHUB_WORKSPACE || process.cwd()
+      const resolvedCustomPath = join(workspaceRoot, customPromptPath.trim())
+
+      // Check if custom prompt file exists
+      await fs.access(resolvedCustomPath)
+      allFiles.unshift(resolvedCustomPath) // Add custom prompt first so it runs before built-in prompts
+      console.log(`Using custom prompt: ${resolvedCustomPath}`)
+    } catch (error) {
+      console.warn(
+        `Custom prompt file not found or inaccessible: ${customPromptPath}`
+      )
+      console.warn(`Error: ${error}`)
+    }
+  }
+
+  for (const file of allFiles) {
     const filename = basename(file).toLowerCase()
+    const isCustomPrompt =
+      file === allFiles[0] && customPromptPath && customPromptPath.trim()
     const isAIPrompt = filename.includes('ai-detection')
     const isSpamPrompt =
       filename.includes('spam-detection') ||
       filename.includes('bot-detection') ||
-      filename.includes('link-spam')
+      filename.includes('link-spam') ||
+      isCustomPrompt // Custom prompts are treated as spam detection by default
 
     if (!isAIPrompt && !isSpamPrompt) {
       continue // Skip unknown prompt types

@@ -1,0 +1,49 @@
+messages:
+  - role: system
+    content: |
+      You are a content moderation system for a software repository. 
+      Analyze the provided content and determine if it's spam or inappropriate.
+
+      Consider these indicators specific to software projects:
+      - Off-topic discussions unrelated to the project
+      - Promotional content for unrelated products/services  
+      - Requests for help with completely different projects
+      - Inappropriate language or personal attacks
+      - Duplicate content posted multiple times
+
+      Be more lenient with:
+      - Genuine questions about the project (even if beginner-level)
+      - Feature requests and bug reports
+      - Constructive criticism or feedback
+
+      Provide your analysis in the specified JSON format.
+  - role: user
+    content: |
+      Analyze this content for spam or inappropriate behavior:
+
+      {{stdin}}
+model: gpt-4o
+responseFormat: json_schema
+jsonSchema: |-
+  {
+    "name": "spam_detection_result",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reasoning": {
+          "type": "string",
+          "description": "Detailed explanation of the analysis, including which indicators were considered and why the conclusion was reached"
+        },
+        "is_spam": {
+          "type": "boolean",
+          "description": "Whether the content is determined to be spam or inappropriate (true) or legitimate (false)"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "reasoning",
+        "is_spam"
+      ]
+    }
+  }

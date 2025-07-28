@@ -26,6 +26,11 @@ inputs:
     description: 'Whether to minimize comments detected as spam'
     required: false
     default: 'true'
+  custom-prompt-path:
+    description:
+      'Path to a custom YAML prompt file in your repository (relative to
+      repository root)'
+    required: false
 
 runs:
   using: 'node16'
