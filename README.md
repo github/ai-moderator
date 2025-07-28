@@ -1,44 +1,7 @@
-# AI Spam Guard 🛡️
+# AI Spam Guard
 
 An AI-powered GitHub Action that automatically detects and moderates spam in
 issues and comments using GitHub Models language models.
-
-## ✨ Recent Updates
-
-**v2.0.0 - Major Refactoring**
-
-- 🔄 **Migrated from OpenAI SDK to GitHub Models** for better integration with
-  GitHub ecosystem
-- 🧩 **Modular Architecture**: Extracted functionality into separate, testable
-  modules
-- 🎯 **Built-in Prompts**: No longer requires external prompt directory
-  configuration
-- 🛠️ **Improved Error Handling**: Better error messages and graceful failures
-- 📦 **TypeScript Improvements**: Better type safety and code organization
-
-## Features
-
-- **🤖 GitHub Models Integration**: Uses GitHub's hosted AI models for accurate
-  spam and AI-generated content detection
-- **🎯 Dual Detection**: Separate detection for generic spam and AI-generated
-  content
-- **🏷️ Automatic Labeling**: Labels issues and comments with configurable labels
-- **👻 Comment Minimization**: Automatically hides spam comments to reduce noise
-- **📁 Modular Design**: Clean, maintainable code structure with separate
-  services
-- **🧪 Comprehensive Testing**: Full test coverage for all modules
-
-## Architecture
-
-The action is now organized into several focused modules:
-
-- **`PromptService`**: Handles loading YAML prompts and GitHub Models API
-  interactions
-- **`GitHubService`**: Manages GitHub API operations (labeling, comment
-  minimization)
-- **`ContentExtractor`**: Extracts content and metadata from GitHub webhook
-  events
-- **`index.ts`**: Main orchestrator that coordinates all services
 
 ## Usage
 
@@ -66,7 +29,7 @@ jobs:
       models: read
     steps:
       - uses: actions/checkout@v4
-      - uses: your-org/ai-spam-guard@v2
+      - uses: github/ai-spam-guard
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           spam-label: 'spam'
@@ -86,16 +49,6 @@ jobs:
 The action no longer requires external API keys - it uses the built-in GitHub
 token with `models: read` permission to access GitHub Models.
 
-## How It Works
-
-1. **Event Trigger**: Action triggers on new issues, comments, or PR reviews
-2. **Content Extraction**: Extracts text content from the GitHub event
-3. **AI Analysis**: Sends content to GitHub Models with specialized prompts for
-   spam and AI detection
-4. **Action Taking**: Based on results, labels the issue/PR and/or minimizes
-   comments
-5. **Logging**: Provides detailed logs of detection results and actions taken
-
 ## Detection Prompts
 
 The action uses built-in YAML prompts located in the `prompts/` directory:
@@ -106,9 +59,12 @@ The action uses built-in YAML prompts located in the `prompts/` directory:
 - **`bot-detection.prompt.yml`**: Identifies automated bot behavior
 - **`link-spam-detection.prompt.yml`**: Focuses on suspicious links and URLs
 
-## Development
+You can iterate on or tweak these prompts via the
+[Models tab](https://github.com/github/ai-spam-guard/models) on this repository.
+If you want to push an update to this prompt, please also include updated test
+data so we can see the effect of the prompt update.
 
-### Local Development
+## Development
 
 ```bash
 # Install dependencies
@@ -134,19 +90,4 @@ npm run test
 
 # Run tests in watch mode
 npm run test:watch
-```
-
-### Module Structure
-
-```
-src/
-├── index.ts              # Main orchestrator
-├── prompt-service.ts     # GitHub Models integration & prompt handling
-├── github-service.ts     # GitHub API operations
-└── content-extractor.ts  # Event content extraction
-
-__tests__/
-├── prompt-service.test.ts
-├── github-service.test.ts
-└── content-extractor.test.ts
 ```
