@@ -124639,9 +124639,10 @@ async function run() {
         const promptsDir = require$$1$1.resolve(__dirname, '..', 'prompts'); // Use built-in prompts
         const spamLabel = coreExports.getInput('spam-label');
         const aiLabel = coreExports.getInput('ai-label');
-        // Initialize services
+        // Initialize services - use GitHub Models instead of OpenAI
         const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY
+            apiKey: token, // Use GitHub token instead of OpenAI API key
+            baseURL: 'https://models.github.ai/inference'
         });
         const octokit = githubExports.getOctokit(token);
         //------------------------------------------------------------

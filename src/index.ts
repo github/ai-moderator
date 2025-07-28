@@ -16,9 +16,10 @@ async function run(): Promise<void> {
     const spamLabel = core.getInput('spam-label')
     const aiLabel = core.getInput('ai-label')
 
-    // Initialize services
+    // Initialize services - use GitHub Models instead of OpenAI
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY
+      apiKey: token, // Use GitHub token instead of OpenAI API key
+      baseURL: 'https://models.github.ai/inference'
     })
     const octokit = github.getOctokit(token)
 

@@ -1,7 +1,7 @@
 name: 'ai-spam-guard'
 description:
-  'Scan new issues and comments with OpenAI prompts; label or hide spam
-  automatically.'
+  'Scan new issues and comments with GitHub Models AI prompts; label or hide
+  spam automatically.'
 author: 'GitHub'
 branding:
   icon: 'shield'
@@ -10,7 +10,8 @@ branding:
 inputs:
   token:
     description:
-      'GitHub token with `issues`, `pull-requests`, and OpenAI API access'
+      'GitHub token with `issues`, `pull-requests`, and `models: read`
+      permissions'
     required: false
     default: ${{ github.token }}
   spam-label:

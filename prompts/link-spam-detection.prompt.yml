@@ -19,7 +19,7 @@ messages:
       Analyze this content for link spam:
 
       {{stdin}}
-model: openai/gpt-4o
+model: gpt-4o
 responseFormat: json_schema
 jsonSchema: |-
   {

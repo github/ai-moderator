@@ -1,14 +1,14 @@
 # AI Spam Guard 🛡️
 
 An AI-powered GitHub Action that automatically detects and moderates spam in
-issues and comments using OpenAI's language models.
+issues and comments using GitHub Models language models.
 
 ## ✨ Recent Updates
 
 **v2.0.0 - Major Refactoring**
 
-- 🔄 **Migrated from GitHub Models to OpenAI SDK** for better reliability and
-  control
+- 🔄 **Migrated from OpenAI SDK to GitHub Models** for better integration with
+  GitHub ecosystem
 - 🧩 **Modular Architecture**: Extracted functionality into separate, testable
   modules
 - 🎯 **Built-in Prompts**: No longer requires external prompt directory
@@ -18,8 +18,8 @@ issues and comments using OpenAI's language models.
 
 ## Features
 
-- **🤖 OpenAI Integration**: Uses OpenAI's GPT models for accurate spam and
-  AI-generated content detection
+- **🤖 GitHub Models Integration**: Uses GitHub's hosted AI models for accurate
+  spam and AI-generated content detection
 - **🎯 Dual Detection**: Separate detection for generic spam and AI-generated
   content
 - **🏷️ Automatic Labeling**: Labels issues and comments with configurable labels
@@ -32,7 +32,8 @@ issues and comments using OpenAI's language models.
 
 The action is now organized into several focused modules:
 
-- **`PromptService`**: Handles loading YAML prompts and OpenAI API interactions
+- **`PromptService`**: Handles loading YAML prompts and GitHub Models API
+  interactions
 - **`GitHubService`**: Manages GitHub API operations (labeling, comment
   minimization)
 - **`ContentExtractor`**: Extracts content and metadata from GitHub webhook
@@ -62,6 +63,7 @@ jobs:
     permissions:
       issues: write
       pull-requests: write
+      models: read
     steps:
       - uses: actions/checkout@v4
       - uses: your-org/ai-spam-guard@v2
@@ -69,8 +71,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           spam-label: 'spam'
           ai-label: 'ai-generated'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 ```
 
 ### Configuration
@@ -83,16 +83,15 @@ jobs:
 
 ### Environment Variables
 
-| Variable         | Description                                  | Required |
-| ---------------- | -------------------------------------------- | -------- |
-| `OPENAI_API_KEY` | Your OpenAI API key for accessing GPT models | Yes      |
+The action no longer requires external API keys - it uses the built-in GitHub
+token with `models: read` permission to access GitHub Models.
 
 ## How It Works
 
 1. **Event Trigger**: Action triggers on new issues, comments, or PR reviews
 2. **Content Extraction**: Extracts text content from the GitHub event
-3. **AI Analysis**: Sends content to OpenAI with specialized prompts for spam
-   and AI detection
+3. **AI Analysis**: Sends content to GitHub Models with specialized prompts for
+   spam and AI detection
 4. **Action Taking**: Based on results, labels the issue/PR and/or minimizes
    comments
 5. **Logging**: Provides detailed logs of detection results and actions taken
@@ -142,7 +141,7 @@ npm run test:watch
 ```
 src/
 ├── index.ts              # Main orchestrator
-├── prompt-service.ts     # OpenAI integration & prompt handling
+├── prompt-service.ts     # GitHub Models integration & prompt handling
 ├── github-service.ts     # GitHub API operations
 └── content-extractor.ts  # Event content extraction
 
