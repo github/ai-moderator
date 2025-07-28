@@ -44,3 +44,34 @@ jsonSchema: |-
       ]
     }
   }
+testData:
+  - stdin: >-
+      Check out this amazing deal! Get 50% off crypto trading at
+      bit.ly/cryptodeal and also visit tinyurl.com/easymoney for more
+      opportunities!
+    expected: 'true'
+  - stdin: >-
+      Visit our casino website for guaranteed wins!
+      http://newdomain123.com/casino Download our app at
+      http://suspicious-site.exe/download
+    expected: 'true'
+  - stdin: >-
+      Hey, I found a solution to this issue in the official documentation:
+      https://github.com/owner/repo/wiki/troubleshooting
+    expected: 'false'
+  - stdin: >-
+      You might want to check the Stack Overflow discussion about this:
+      https://stackoverflow.com/questions/12345/similar-issue
+    expected: 'false'
+  - stdin: >-
+      This looks like a bug in the library. See the related issue:
+      https://github.com/library/issues/456
+    expected: 'false'
+  - stdin: >-
+      URGENT! Make money fast with our new system! Visit http://quickmoney.biz
+      and http://earnfast.net for details. Also check bit.ly/fastcash
+    expected: 'true'
+evaluators:
+  - name: is-link-spam
+    string:
+      contains: '{{expected}}'

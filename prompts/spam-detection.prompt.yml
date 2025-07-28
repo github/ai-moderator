@@ -44,3 +44,38 @@ jsonSchema: |-
       ]
     }
   }
+testData:
+  - stdin: >-
+      🚀 AMAZING OPPORTUNITY! 🚀 Make $1000 daily from home! 💰 Contact me for
+      exclusive crypto trading secrets! Send your email and phone number!
+    expected: 'true'
+  - stdin: >-
+      BUY BUY BUY! Hot stocks alert! Don't miss out on this incredible deal!
+      Visit our premium investment site now! Limited time offer!
+    expected: 'true'
+  - stdin: >-
+      asdfjaslkdfj alskdjflaskdjf random text here askljdflasd qwerty qwerty
+      qwerty nonsense content here
+    expected: 'true'
+  - stdin: >-
+      I'm experiencing the same issue described in this bug report. The
+      application crashes when I try to import large CSV files. Any suggestions
+      for a workaround?
+    expected: 'false'
+  - stdin: >-
+      Thanks for the fix! This resolves the memory leak I was seeing in
+      production. The performance improvement is significant.
+    expected: 'false'
+  - stdin: >-
+      Could you please add support for TypeScript in the next release? I'd be
+      happy to contribute if you need help with the implementation.
+    expected: 'false'
+  - stdin: >-
+      FREE MONEY! FREE MONEY! FREE MONEY! Click here now! Send me your bank
+      details and I'll transfer $10,000 immediately! This is not a scam! This is
+      not a scam! This is not a scam!
+    expected: 'true'
+evaluators:
+  - name: is-spam
+    string:
+      contains: '{{expected}}'
