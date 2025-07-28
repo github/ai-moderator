@@ -22,7 +22,7 @@ import require$$2$2 from 'perf_hooks';
 import require$$5 from 'util/types';
 import require$$4$2 from 'async_hooks';
 import require$$1$5 from 'console';
-import Url from 'url';
+import Url, { fileURLToPath } from 'url';
 import zlib from 'zlib';
 import require$$6 from 'string_decoder';
 import require$$0$8 from 'diagnostics_channel';
@@ -124636,6 +124636,8 @@ async function run() {
         // 0. Inputs & setup
         //------------------------------------------------------------
         const token = coreExports.getInput('token');
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = require$$1$1.dirname(__filename);
         const promptsDir = require$$1$1.resolve(__dirname, '..', 'prompts'); // Use built-in prompts
         const spamLabel = coreExports.getInput('spam-label');
         const aiLabel = coreExports.getInput('ai-label');
