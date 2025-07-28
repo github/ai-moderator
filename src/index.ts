@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as path from 'path'
+import { fileURLToPath } from 'url'
 import { OpenAI } from 'openai'
 import { evaluateContent } from './prompt.js'
 import { addLabels, minimizeComment } from './github.js'
@@ -12,6 +13,8 @@ async function run(): Promise<void> {
     // 0. Inputs & setup
     //------------------------------------------------------------
     const token = core.getInput('token')
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
     const promptsDir = path.resolve(__dirname, '..', 'prompts') // Use built-in prompts
     const spamLabel = core.getInput('spam-label')
     const aiLabel = core.getInput('ai-label')
