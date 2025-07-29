@@ -1,4 +1,4 @@
-# AI Spam Guard
+# AI Moderator
 
 An AI-powered GitHub Action that automatically detects and moderates spam in
 issues and comments using LLMs.
@@ -10,7 +10,7 @@ write your own custom prompt if you've got more specific requirements.
 ## Usage
 
 Add this action to your repository's workflow file (e.g.,
-`.github/workflows/spam-guard.yml`):
+`.github/workflows/moderator.yml`):
 
 ```yaml
 name: AI Spam Guard
@@ -32,7 +32,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: github/ai-spam-guard
+      - uses: github/ai-moderator
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           spam-label: 'spam'
@@ -83,7 +83,7 @@ All prompts are enabled by default. You can selectively disable them based on
 your repository's moderation needs:
 
 ```yaml
-- uses: github/ai-spam-guard
+- uses: github/ai-moderator
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     enable-spam-detection: true # Enable general spam detection
@@ -92,7 +92,7 @@ your repository's moderation needs:
 ```
 
 You can iterate on or tweak these prompts via the
-[Models tab](https://github.com/github/ai-spam-guard/models) on this repository.
+[Models tab](https://github.com/github/ai-moderator/models) on this repository.
 If you want to push an update to this prompt, please also include updated test
 data so we can see the effect of the prompt update.
 
@@ -102,7 +102,7 @@ You can also provide your own custom prompt file in your repository using the
 `custom-prompt-path` input:
 
 ```yaml
-- uses: github/ai-spam-guard
+- uses: github/ai-moderator
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     custom-prompt-path: '.github/prompts/my-custom-spam-detection.prompt.yml'

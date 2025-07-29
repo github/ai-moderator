@@ -1,4 +1,4 @@
-name: 'ai-spam-guard'
+name: 'ai-moderator'
 description:
   'Scan new issues and comments with GitHub Models AI prompts; label or hide
   spam automatically.'

@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run AI Spam Guard with All Prompts
-        uses: github/ai-spam-guard
+        uses: github/ai-moderator
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           spam-label: 'spam'
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run AI Spam Guard with Selective Prompts
-        uses: github/ai-spam-guard
+        uses: github/ai-moderator
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           spam-label: 'potential-spam'
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run AI Spam Guard - Link Spam Only
-        uses: github/ai-spam-guard
+        uses: github/ai-moderator
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           spam-label: 'link-spam'

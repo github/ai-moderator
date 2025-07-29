@@ -1,7 +1,7 @@
 # Contributing
 
-[fork]: https://github.com/actions/ai-spam-guard/fork
-[pr]: https://github.com/actions/ai-spam-guard/compare
+[fork]: https://github.com/actions/ai-moderator/fork
+[pr]: https://github.com/actions/ai-moderator/compare
 [code-of-conduct]: CODE_OF_CONDUCT.md
 
 Hi there! We're thrilled that you'd like to contribute to this project. Your
@@ -18,9 +18,9 @@ by its terms.
 ## Found a bug?
 
 - **Ensure the bug was not already reported** by searching on GitHub under
-  [Issues](https://github.com/actions/ai-spam-guard/issues).
+  [Issues](https://github.com/actions/ai-moderator/issues).
 - If you're unable to find an open issue addressing the problem,
-  [open a new one](https://github.com/actions/ai-spam-guard/issues/new). Be sure
+  [open a new one](https://github.com/actions/ai-moderator/issues/new). Be sure
   to include a **title and clear description**, as much relevant information as
   possible, and a **code sample** or a **reproducible test case** demonstrating
   the expected behavior that is not occurring.
@@ -73,7 +73,7 @@ Once the changes are merged into main, a repository maintainer should:
    We adhere to [SemVer 2.0](https://semver.org/spec/v2.0.0.html) to the best of
    our ability. Commit the changes to `package.json` and `package-lock.json` and
    push them to main.
-1. [Draft a new release](https://github.com/actions/ai-spam-guard/releases/new)
+1. [Draft a new release](https://github.com/actions/ai-moderator/releases/new)
    pointing to the ref of the version bump you just made. Publish the release to
    the marketplace when complete.
 1. Finally: update the corresponding "major tag" (v1, v2, v3, etc) to point to
