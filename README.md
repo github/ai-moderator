@@ -1,11 +1,13 @@
 # AI Spam Guard
 
 An AI-powered GitHub Action that automatically detects and moderates spam in
-issues and comments using GitHub Models language models.
+issues and comments using LLMs.
+
+Each new issue and comment is passed through a series of prompts: by default
+checking for link spam, regular spam, and AI-generated content, but you can
+write your own custom prompt if you've got more specific requirements.
 
 ## Usage
-
-### Basic Setup
 
 Add this action to your repository's workflow file (e.g.,
 `.github/workflows/spam-guard.yml`):
@@ -56,7 +58,7 @@ jobs:
 | `enable-link-spam-detection` | Enable built-in link spam detection prompt                                   | `true`                | No       |
 | `enable-ai-detection`        | Enable built-in AI-generated content detection prompt                        | `true`                | No       |
 
-### Inference
+## Inference
 
 The action does not require any external API keys for inference - it uses the
 built-in GitHub token with `models: read` permission to access GitHub Models.
@@ -65,7 +67,7 @@ Every GitHub user has Github Models inference for free, but if you're running
 into rate limiting issues you can choose to
 [opt in to paid usage](https://docs.github.com/en/billing/managing-billing-for-your-products/about-billing-for-github-models).
 
-## Detection Prompts
+### Default prompts
 
 The action uses built-in YAML prompts located in the `prompts/` directory. Each
 prompt can be individually enabled or disabled using the configuration options:
@@ -94,7 +96,7 @@ You can iterate on or tweak these prompts via the
 If you want to push an update to this prompt, please also include updated test
 data so we can see the effect of the prompt update.
 
-### Custom Prompts
+### Custom prompts
 
 You can also provide your own custom prompt file in your repository using the
 `custom-prompt-path` input:
