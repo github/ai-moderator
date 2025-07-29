@@ -5,7 +5,8 @@ issues and comments using LLMs.
 
 Each new issue and comment is passed through a series of prompts: by default
 checking for link spam, regular spam, and AI-generated content, but you can
-write your own custom prompt if you've got more specific requirements.
+[write your own custom prompt](#custom-prompts) if you've got more specific
+requirements.
 
 ## Usage
 
