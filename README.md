@@ -36,6 +36,10 @@ jobs:
           spam-label: 'spam'
           ai-label: 'ai-generated'
           minimize-detected-comments: true
+          # Built-in prompt configuration (all enabled by default)
+          enable-spam-detection: true
+          enable-link-spam-detection: true
+          enable-ai-detection: true
           # custom-prompt-path: '.github/prompts/my-custom.prompt.yml'  # Optional
 ```
 
@@ -48,6 +52,9 @@ jobs:
 | `ai-label`                   | Label to add when AI-generated content is detected                           | `ai-generated`        | No       |
 | `minimize-detected-comments` | Whether to minimize comments detected as spam                                | `true`                | No       |
 | `custom-prompt-path`         | Path to a custom YAML prompt file in your repository (relative to repo root) | (none)                | No       |
+| `enable-spam-detection`      | Enable built-in spam detection prompt                                        | `true`                | No       |
+| `enable-link-spam-detection` | Enable built-in link spam detection prompt                                   | `true`                | No       |
+| `enable-ai-detection`        | Enable built-in AI-generated content detection prompt                        | `true`                | No       |
 
 ### Inference
 
@@ -60,13 +67,27 @@ into rate limiting issues you can choose to
 
 ## Detection Prompts
 
-The action uses built-in YAML prompts located in the `prompts/` directory:
+The action uses built-in YAML prompts located in the `prompts/` directory. Each
+prompt can be individually enabled or disabled using the configuration options:
 
 - **`spam-detection.prompt.yml`**: Detects promotional content, scams, and
-  irrelevant posts
+  irrelevant posts (controlled by `enable-spam-detection`)
 - **`ai-detection.prompt.yml`**: Identifies AI-generated content patterns
-- **`bot-detection.prompt.yml`**: Identifies automated bot behavior
+  (controlled by `enable-ai-detection`)
 - **`link-spam-detection.prompt.yml`**: Focuses on suspicious links and URLs
+  (controlled by `enable-link-spam-detection`)
+
+All prompts are enabled by default. You can selectively disable them based on
+your repository's moderation needs:
+
+```yaml
+- uses: github/ai-spam-guard
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    enable-spam-detection: true # Enable general spam detection
+    enable-link-spam-detection: false # Disable link spam detection
+    enable-ai-detection: true # Enable AI content detection
+```
 
 You can iterate on or tweak these prompts via the
 [Models tab](https://github.com/github/ai-spam-guard/models) on this repository.
@@ -85,62 +106,7 @@ You can also provide your own custom prompt file in your repository using the
     custom-prompt-path: '.github/prompts/my-custom-spam-detection.prompt.yml'
 ```
 
-Custom prompt files should follow the same YAML format as the built-in prompts:
-
-```yaml
-messages:
-  - role: system
-    content: |
-      You are a content moderation system. Analyze the provided content
-      and determine if it violates repository guidelines.
-
-      Consider these indicators:
-      - Off-topic discussions
-      - Inappropriate language
-      - Spam or promotional content
-
-      Provide your analysis in the specified JSON format.
-  - role: user
-    content: |
-      Analyze this content:
-
-      {{stdin}}
-model: gpt-4o
-responseFormat: json_schema
-jsonSchema: |-
-  {
-    "name": "spam_detection_result",
-    "strict": true,
-    "schema": {
-      "type": "object",
-      "properties": {
-        "reasoning": {
-          "type": "string",
-          "description": "Detailed explanation of the analysis"
-        },
-        "is_spam": {
-          "type": "boolean",
-          "description": "Whether the content violates guidelines"
-        }
-      },
-      "additionalProperties": false,
-      "required": ["reasoning", "is_spam"]
-    }
-  }
-```
-
-**Notes:**
-
-- Custom prompts are treated as spam detection prompts by default (unless the
-  filename contains "ai-detection")
-- Custom prompts are evaluated **before** the built-in prompts
-- The `{{stdin}}` placeholder will be replaced with the actual content to
-  analyze
-- Custom prompts must return a JSON response with at least `reasoning` and
-  `is_spam` fields
-
-### Example Custom Prompt
-
+Custom prompt files should follow the same YAML format as the built-in prompts.
 An example custom prompt file is included at
 `.github/prompts/example-custom.prompt.yml` that demonstrates the proper format
 and shows how to create repository-specific spam detection rules.

@@ -1,0 +1,71 @@
+# Example workflow demonstrating configurable built-in prompts
+name: 'AI Spam Guard with Custom Configuration'
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  # Basic usage with all prompts enabled (default behavior)
+  full-protection:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      models: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run AI Spam Guard with All Prompts
+        uses: github/ai-spam-guard
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          spam-label: 'spam'
+          ai-label: 'ai-generated'
+          minimize-detected-comments: true
+
+  # Selective prompt configuration example
+  custom-protection:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      models: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run AI Spam Guard with Selective Prompts
+        uses: github/ai-spam-guard
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          spam-label: 'potential-spam'
+          ai-label: 'ai-generated'
+          minimize-detected-comments: false
+          # Only enable general spam and link spam detection
+          enable-spam-detection: true
+          enable-link-spam-detection: true
+          enable-ai-detection: false # Disable AI detection for this workflow
+
+  # Link spam only (for repositories that mainly deal with link spam)
+  link-spam-only:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      models: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run AI Spam Guard - Link Spam Only
+        uses: github/ai-spam-guard
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          spam-label: 'link-spam'
+          minimize-detected-comments: true
+          # Only enable link spam detection
+          enable-spam-detection: false
+          enable-link-spam-detection: true
+          enable-ai-detection: false

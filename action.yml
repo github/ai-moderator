@@ -31,6 +31,18 @@ inputs:
       'Path to a custom YAML prompt file in your repository (relative to
       repository root)'
     required: false
+  enable-spam-detection:
+    description: 'Enable built-in spam detection prompt'
+    required: false
+    default: 'true'
+  enable-link-spam-detection:
+    description: 'Enable built-in link spam detection prompt'
+    required: false
+    default: 'true'
+  enable-ai-detection:
+    description: 'Enable built-in AI-generated content detection prompt'
+    required: false
+    default: 'true'
 
 runs:
   using: 'node16'

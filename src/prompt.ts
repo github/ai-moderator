@@ -15,6 +15,12 @@ interface PromptConfig {
   jsonSchema?: string
 }
 
+interface BuiltInPromptConfig {
+  enableSpamDetection: boolean
+  enableLinkSpamDetection: boolean
+  enableAiDetection: boolean
+}
+
 // Response interfaces for different detection types
 interface SpamDetectionResult {
   reasoning: string
@@ -141,13 +147,30 @@ export async function evaluateContent(
   openai: OpenAI,
   promptsDir: string,
   content: string,
-  customPromptPath?: string
+  customPromptPath?: string,
+  builtInConfig?: BuiltInPromptConfig
 ): Promise<{ spam: boolean; ai: boolean }> {
   const files = await getPromptFiles(promptsDir)
   const flags = { spam: false, ai: false }
 
+  // Filter built-in prompts based on configuration
+  const filteredFiles = files.filter((file) => {
+    const filename = basename(file).toLowerCase()
+
+    if (filename.includes('ai-detection')) {
+      return builtInConfig?.enableAiDetection !== false
+    } else if (filename.includes('spam-detection')) {
+      return builtInConfig?.enableSpamDetection !== false
+    } else if (filename.includes('link-spam')) {
+      return builtInConfig?.enableLinkSpamDetection !== false
+    }
+
+    // Include unknown prompt types by default
+    return true
+  })
+
   // Add custom prompt file if provided
-  const allFiles = [...files]
+  const allFiles = [...filteredFiles]
   if (customPromptPath && customPromptPath.trim()) {
     try {
       // Resolve custom prompt path relative to workspace root

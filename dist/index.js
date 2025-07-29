@@ -2,7 +2,7 @@ import require$$0 from 'os';
 import require$$0$1 from 'crypto';
 import require$$1$2, { promises, createReadStream } from 'fs';
 import * as require$$1$1 from 'path';
-import require$$1__default, { join, basename as basename$1 } from 'path';
+import require$$1__default, { basename as basename$1, join } from 'path';
 import require$$2$1 from 'http';
 import require$$3$1 from 'https';
 import require$$0$4 from 'net';
@@ -124522,11 +124522,26 @@ async function getPromptFiles(promptsDir) {
 /**
  * Evaluate content against all prompts in a directory
  */
-async function evaluateContent(openai, promptsDir, content, customPromptPath) {
+async function evaluateContent(openai, promptsDir, content, customPromptPath, builtInConfig) {
     const files = await getPromptFiles(promptsDir);
     const flags = { spam: false, ai: false };
+    // Filter built-in prompts based on configuration
+    const filteredFiles = files.filter((file) => {
+        const filename = basename$1(file).toLowerCase();
+        if (filename.includes('ai-detection')) {
+            return builtInConfig?.enableAiDetection !== false;
+        }
+        else if (filename.includes('spam-detection')) {
+            return builtInConfig?.enableSpamDetection !== false;
+        }
+        else if (filename.includes('link-spam')) {
+            return builtInConfig?.enableLinkSpamDetection !== false;
+        }
+        // Include unknown prompt types by default
+        return true;
+    });
     // Add custom prompt file if provided
-    const allFiles = [...files];
+    const allFiles = [...filteredFiles];
     if (customPromptPath && customPromptPath.trim()) {
         try {
             // Resolve custom prompt path relative to workspace root
@@ -124659,6 +124674,10 @@ async function run() {
         const aiLabel = coreExports.getInput('ai-label');
         const minimizeComments = coreExports.getBooleanInput('minimize-detected-comments');
         const customPromptPath = coreExports.getInput('custom-prompt-path');
+        // Built-in prompt configuration
+        const enableSpamDetection = coreExports.getBooleanInput('enable-spam-detection');
+        const enableLinkSpamDetection = coreExports.getBooleanInput('enable-link-spam-detection');
+        const enableAiDetection = coreExports.getBooleanInput('enable-ai-detection');
         const openai = new OpenAI({
             apiKey: token,
             baseURL: 'https://models.github.ai/inference'
@@ -124675,7 +124694,11 @@ async function run() {
             return;
         }
         coreExports.info('Evaluating content for spam and AI-generated content...');
-        const flags = await evaluateContent(openai, promptsDir, content, customPromptPath);
+        const flags = await evaluateContent(openai, promptsDir, content, customPromptPath, {
+            enableSpamDetection,
+            enableLinkSpamDetection,
+            enableAiDetection
+        });
         if (!flags.spam && !flags.ai) {
             coreExports.info('No spam or AI-generated content detected ✅');
             return;

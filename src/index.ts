@@ -18,6 +18,13 @@ async function run(): Promise<void> {
     const minimizeComments = core.getBooleanInput('minimize-detected-comments')
     const customPromptPath = core.getInput('custom-prompt-path')
 
+    // Built-in prompt configuration
+    const enableSpamDetection = core.getBooleanInput('enable-spam-detection')
+    const enableLinkSpamDetection = core.getBooleanInput(
+      'enable-link-spam-detection'
+    )
+    const enableAiDetection = core.getBooleanInput('enable-ai-detection')
+
     const openai = new OpenAI({
       apiKey: token,
       baseURL: 'https://models.github.ai/inference'
@@ -44,7 +51,12 @@ async function run(): Promise<void> {
       openai,
       promptsDir,
       content,
-      customPromptPath
+      customPromptPath,
+      {
+        enableSpamDetection,
+        enableLinkSpamDetection,
+        enableAiDetection
+      }
     )
 
     if (!flags.spam && !flags.ai) {

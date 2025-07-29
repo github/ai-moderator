@@ -101,7 +101,8 @@ testData:
       multi agents haven’t been so much effective. Then I went back to a single
       agent creating code with baby steps. How it’s going for you?
     expected: 'false'
-  - stdin: this beast with claude 4 opus just gonna eat through your bank account :)
+  - stdin:
+      this beast with claude 4 opus just gonna eat through your bank account :)
     expected: 'false'
 evaluators:
   - name: is-ai
