@@ -35,3 +35,5 @@ ignored:
     - '@rollup/rollup-win32-ia32-msvc'
     - '@rollup/rollup-win32-x64-msvc'
     - 'fsevents'
+    - 'mime-db'
+    - 'mime-types'
