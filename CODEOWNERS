@@ -4,4 +4,4 @@
 ############################################################################
 
 # Default owners, unless a later match takes precedence.
-* @actions/models
+* @github/github-models-reviewers
