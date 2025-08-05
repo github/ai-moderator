@@ -141,3 +141,7 @@ npm run test
 # Run tests in watch mode
 npm run test:watch
 ```
+
+## License 
+
+This project is licensed under the terms of the MIT open source license. Please refer to [LICENSE](./LICENSE) for the full terms.
