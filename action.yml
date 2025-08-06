@@ -1,4 +1,4 @@
-name: 'AI Moderator'
+name: 'AI Issue and Comment Moderator'
 description:
   'Scan new issues and comments with GitHub Models AI prompts; label or hide
   spam automatically.'
