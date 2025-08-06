@@ -1,7 +1,8 @@
 # AI Moderator
 
-An AI-powered GitHub Action that automatically detects and moderates spam in
-issues and comments using LLMs.
+An AI-powered GitHub Action that automatically detects spam in issues and
+comments using LLMs. Detected issues are tagged as spam and detected comments
+are (optionally) minimized.
 
 Each new issue and comment is passed through a series of prompts: by default
 checking for link spam, regular spam, and AI-generated content, but you can
