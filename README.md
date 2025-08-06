@@ -15,7 +15,7 @@ Add this action to your repository's workflow file (e.g.,
 `.github/workflows/moderator.yml`):
 
 ```yaml
-name: AI Spam Guard
+name: AI Moderator
 on:
   issues:
     types: [opened]
