@@ -1,6 +1,6 @@
 ---
 name: openai
-version: 4.104.0
+version: 5.12.2
 type: npm
 summary: The official TypeScript library for the OpenAI API
 homepage:
