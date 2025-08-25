@@ -1,6 +1,6 @@
 ---
 name: "@types/estree"
-version: 1.0.7
+version: 1.0.8
 type: npm
 summary: TypeScript definitions for estree
 homepage: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/estree

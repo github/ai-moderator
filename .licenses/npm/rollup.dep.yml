@@ -1,6 +1,6 @@
 ---
 name: rollup
-version: 4.43.0
+version: 4.48.1
 type: npm
 summary: Next-generation ES module bundler
 homepage: https://rollupjs.org/
@@ -24,8 +24,8 @@ licenses:
     THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n\n# Licenses of bundled dependencies\nThe
     published Rollup artifact additionally contains code with the following licenses:\nMIT,
     ISC, 0BSD\n\n# Bundled dependencies:\n## @jridgewell/sourcemap-codec\nLicense:
-    MIT\nBy: Rich Harris\nRepository: git+https://github.com/jridgewell/sourcemap-codec.git\n\n>
-    The MIT License\n> \n> Copyright (c) 2015 Rich Harris\n> \n> Permission is hereby
+    MIT\nBy: Justin Ridgewell\nRepository: git+https://github.com/jridgewell/sourcemaps.git\n\n>
+    Copyright 2024 Justin Ridgewell <justin@ridgewell.name>\n> \n> Permission is hereby
     granted, free of charge, to any person obtaining a copy\n> of this software and
     associated documentation files (the \"Software\"), to deal\n> in the Software
     without restriction, including without limitation the rights\n> to use, copy,
@@ -38,7 +38,7 @@ licenses:
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n>
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n> LIABILITY,
     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n> OUT OF OR
-    IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n##
+    IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\n> SOFTWARE.\n\n---------------------------------------\n\n##
     @rollup/pluginutils\nLicense: MIT\nBy: Rich Harris\nRepository: rollup/plugins\n\n>
     The MIT License (MIT)\n> \n> Copyright (c) 2019 RollupJS Plugin Contributors (https://github.com/rollup/plugins/graphs/contributors)\n>
     \n> Permission is hereby granted, free of charge, to any person obtaining a copy\n>
@@ -251,7 +251,7 @@ licenses:
     IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## is-reference\nLicense:
     MIT\nBy: Rich Harris\nRepository: git+https://github.com/Rich-Harris/is-reference.git\n\n---------------------------------------\n\n##
     locate-character\nLicense: MIT\nBy: Rich Harris\nRepository: git+https://gitlab.com/Rich-Harris/locate-character.git\n\n---------------------------------------\n\n##
-    magic-string\nLicense: MIT\nBy: Rich Harris\nRepository: https://github.com/rich-harris/magic-string\n\n>
+    magic-string\nLicense: MIT\nBy: Rich Harris\nRepository: https://github.com/rich-harris/magic-string.git\n\n>
     Copyright 2018 Rich Harris\n> \n> Permission is hereby granted, free of charge,
     to any person obtaining a copy of this software and associated documentation files
     (the \"Software\"), to deal in the Software without restriction, including without
