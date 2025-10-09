@@ -17,6 +17,7 @@ async function run(): Promise<void> {
     const aiLabel = core.getInput('ai-label')
     const minimizeComments = core.getBooleanInput('minimize-detected-comments')
     const customPromptPath = core.getInput('custom-prompt-path')
+    const endpoint = core.getInput('endpoint')
 
     // Built-in prompt configuration
     const enableSpamDetection = core.getBooleanInput('enable-spam-detection')
@@ -27,7 +28,7 @@ async function run(): Promise<void> {
 
     const openai = new OpenAI({
       apiKey: token,
-      baseURL: 'https://models.github.ai/inference'
+      baseURL: endpoint
     })
     const octokit = github.getOctokit(token)
 

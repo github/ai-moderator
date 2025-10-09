@@ -49,16 +49,17 @@ jobs:
 
 ### Configuration
 
-| Input                        | Description                                                                        | Default               | Required |
-| ---------------------------- | ---------------------------------------------------------------------------------- | --------------------- | -------- |
-| `token`                      | GitHub token with issues and pull-requests permissions                             | `${{ github.token }}` | No       |
-| `spam-label`                 | Label to add when generic spam is detected                                         | `spam`                | No       |
-| `ai-label`                   | Label to add when AI-generated content is detected                                 | `ai-generated`        | No       |
-| `minimize-detected-comments` | Whether to minimize comments detected as spam                                      | `true`                | No       |
-| `custom-prompt-path`         | Path to a custom YAML prompt file in your repository (relative to repository root) | (none)                | No       |
-| `enable-spam-detection`      | Enable built-in spam detection prompt                                              | `true`                | No       |
-| `enable-link-spam-detection` | Enable built-in link spam detection prompt                                         | `true`                | No       |
-| `enable-ai-detection`        | Enable built-in AI-generated content detection prompt                              | `true`                | No       |
+| Input                        | Description                                                                        | Default                              | Required |
+| ---------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------ | -------- |
+| `token`                      | GitHub token with issues and pull-requests permissions                             | `${{ github.token }}`                | No       |
+| `spam-label`                 | Label to add when generic spam is detected                                         | `spam`                               | No       |
+| `ai-label`                   | Label to add when AI-generated content is detected                                 | `ai-generated`                       | No       |
+| `minimize-detected-comments` | Whether to minimize comments detected as spam                                      | `true`                               | No       |
+| `custom-prompt-path`         | Path to a custom YAML prompt file in your repository (relative to repository root) | (none)                               | No       |
+| `enable-spam-detection`      | Enable built-in spam detection prompt                                              | `true`                               | No       |
+| `enable-link-spam-detection` | Enable built-in link spam detection prompt                                         | `true`                               | No       |
+| `enable-ai-detection`        | Enable built-in AI-generated content detection prompt                              | `true`                               | No       |
+| `endpoint`                   | The endpoint to use for inference                                                  | `https://models.github.ai/inference` | No       |
 
 ## Inference
 
