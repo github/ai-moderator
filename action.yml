@@ -43,6 +43,10 @@ inputs:
     description: 'Enable built-in AI-generated content detection prompt'
     required: false
     default: 'true'
+  endpoint:
+    description: The endpoint to use for inference
+    required: false
+    default: 'https://models.github.ai/inference'
 
 runs:
   using: 'node16'

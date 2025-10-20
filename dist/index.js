@@ -40957,13 +40957,14 @@ async function run() {
         const aiLabel = coreExports.getInput('ai-label');
         const minimizeComments = coreExports.getBooleanInput('minimize-detected-comments');
         const customPromptPath = coreExports.getInput('custom-prompt-path');
+        const endpoint = coreExports.getInput('endpoint');
         // Built-in prompt configuration
         const enableSpamDetection = coreExports.getBooleanInput('enable-spam-detection');
         const enableLinkSpamDetection = coreExports.getBooleanInput('enable-link-spam-detection');
         const enableAiDetection = coreExports.getBooleanInput('enable-ai-detection');
         const openai = new OpenAI({
             apiKey: token,
-            baseURL: 'https://models.github.ai/inference'
+            baseURL: endpoint
         });
         const octokit = githubExports.getOctokit(token);
         if (!shouldProcess(githubExports.context)) {
