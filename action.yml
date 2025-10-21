@@ -26,6 +26,11 @@ inputs:
     description: 'Whether to minimize comments detected as spam'
     required: false
     default: 'true'
+  dry-run:
+    description:
+      'If true, only evaluate without adding labels or minimizing comments'
+    required: false
+    default: 'false'
   custom-prompt-path:
     description:
       'Path to a custom YAML prompt file in your repository (relative to
