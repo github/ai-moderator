@@ -40958,6 +40958,7 @@ async function run() {
         const minimizeComments = coreExports.getBooleanInput('minimize-detected-comments');
         const customPromptPath = coreExports.getInput('custom-prompt-path');
         const endpoint = coreExports.getInput('endpoint');
+        const dryRun = coreExports.getBooleanInput('dry-run');
         // Built-in prompt configuration
         const enableSpamDetection = coreExports.getBooleanInput('enable-spam-detection');
         const enableLinkSpamDetection = coreExports.getBooleanInput('enable-link-spam-detection');
@@ -40997,14 +40998,24 @@ async function run() {
                 labels.push(aiLabel);
         }
         if (issueNumber && labels.length > 0) {
-            await addLabels(octokit, githubExports.context, issueNumber, labels);
-            coreExports.info(`Added labels [${labels.join(', ')}] to issue #${issueNumber}`);
+            if (dryRun) {
+                coreExports.info(`[DRY RUN] Would add labels [${labels.join(', ')}] to issue #${issueNumber}`);
+            }
+            else {
+                await addLabels(octokit, githubExports.context, issueNumber, labels);
+                coreExports.info(`Added labels [${labels.join(', ')}] to issue #${issueNumber}`);
+            }
         }
         // Only minimize comments if they are spam, not just AI-generated
         // and if minimize-detected-comments is enabled
         if (commentNodeId && flags.spam && minimizeComments) {
-            await minimizeComment(octokit, commentNodeId);
-            coreExports.info(`Comment ${commentNodeId} minimized as spam`);
+            if (dryRun) {
+                coreExports.info(`[DRY RUN] Would minimize comment ${commentNodeId} as spam`);
+            }
+            else {
+                await minimizeComment(octokit, commentNodeId);
+                coreExports.info(`Comment ${commentNodeId} minimized as spam`);
+            }
         }
     }
     catch (error) {

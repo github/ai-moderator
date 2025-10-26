@@ -18,6 +18,7 @@ async function run(): Promise<void> {
     const minimizeComments = core.getBooleanInput('minimize-detected-comments')
     const customPromptPath = core.getInput('custom-prompt-path')
     const endpoint = core.getInput('endpoint')
+    const dryRun = core.getBooleanInput('dry-run')
 
     // Built-in prompt configuration
     const enableSpamDetection = core.getBooleanInput('enable-spam-detection')
@@ -75,15 +76,27 @@ async function run(): Promise<void> {
     }
 
     if (issueNumber && labels.length > 0) {
-      await addLabels(octokit, github.context, issueNumber, labels)
-      core.info(`Added labels [${labels.join(', ')}] to issue #${issueNumber}`)
+      if (dryRun) {
+        core.info(
+          `[DRY RUN] Would add labels [${labels.join(', ')}] to issue #${issueNumber}`
+        )
+      } else {
+        await addLabels(octokit, github.context, issueNumber, labels)
+        core.info(
+          `Added labels [${labels.join(', ')}] to issue #${issueNumber}`
+        )
+      }
     }
 
     // Only minimize comments if they are spam, not just AI-generated
     // and if minimize-detected-comments is enabled
     if (commentNodeId && flags.spam && minimizeComments) {
-      await minimizeComment(octokit, commentNodeId)
-      core.info(`Comment ${commentNodeId} minimized as spam`)
+      if (dryRun) {
+        core.info(`[DRY RUN] Would minimize comment ${commentNodeId} as spam`)
+      } else {
+        await minimizeComment(octokit, commentNodeId)
+        core.info(`Comment ${commentNodeId} minimized as spam`)
+      }
     }
   } catch (error) {
     core.setFailed((error as Error).message)

@@ -55,6 +55,7 @@ jobs:
 | `spam-label`                 | Label to add when generic spam is detected                                         | `spam`                               | No       |
 | `ai-label`                   | Label to add when AI-generated content is detected                                 | `ai-generated`                       | No       |
 | `minimize-detected-comments` | Whether to minimize comments detected as spam                                      | `true`                               | No       |
+| `dry-run`                    | If true, only evaluate without adding labels or minimizing comments                | `false`                              | No       |
 | `custom-prompt-path`         | Path to a custom YAML prompt file in your repository (relative to repository root) | (none)                               | No       |
 | `enable-spam-detection`      | Enable built-in spam detection prompt                                              | `true`                               | No       |
 | `enable-link-spam-detection` | Enable built-in link spam detection prompt                                         | `true`                               | No       |
