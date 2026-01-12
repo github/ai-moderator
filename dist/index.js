@@ -79,7 +79,8 @@ function requireUtils$3 () {
 	// We use any as a valid input type
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	Object.defineProperty(utils$3, "__esModule", { value: true });
-	utils$3.toCommandProperties = utils$3.toCommandValue = void 0;
+	utils$3.toCommandValue = toCommandValue;
+	utils$3.toCommandProperties = toCommandProperties;
 	/**
 	 * Sanitizes an input into a string so it can be passed into issueCommand safely
 	 * @param input input to sanitize into a string
@@ -93,7 +94,6 @@ function requireUtils$3 () {
 	    }
 	    return JSON.stringify(input);
 	}
-	utils$3.toCommandValue = toCommandValue;
 	/**
 	 *
 	 * @param annotationProperties
@@ -113,7 +113,6 @@ function requireUtils$3 () {
 	        endColumn: annotationProperties.endColumn
 	    };
 	}
-	utils$3.toCommandProperties = toCommandProperties;
 	
 	return utils$3;
 }
@@ -139,36 +138,68 @@ function requireCommand () {
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (command && command.__importStar) || function (mod) {
-	    if (mod && mod.__esModule) return mod;
-	    var result = {};
-	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	    __setModuleDefault(result, mod);
-	    return result;
-	};
+	var __importStar = (command && command.__importStar) || (function () {
+	    var ownKeys = function(o) {
+	        ownKeys = Object.getOwnPropertyNames || function (o) {
+	            var ar = [];
+	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+	            return ar;
+	        };
+	        return ownKeys(o);
+	    };
+	    return function (mod) {
+	        if (mod && mod.__esModule) return mod;
+	        var result = {};
+	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+	        __setModuleDefault(result, mod);
+	        return result;
+	    };
+	})();
 	Object.defineProperty(command, "__esModule", { value: true });
-	command.issue = command.issueCommand = void 0;
+	command.issueCommand = issueCommand;
+	command.issue = issue;
 	const os = __importStar(require$$0);
 	const utils_1 = requireUtils$3();
 	/**
-	 * Commands
+	 * Issues a command to the GitHub Actions runner
+	 *
+	 * @param command - The command name to issue
+	 * @param properties - Additional properties for the command (key-value pairs)
+	 * @param message - The message to include with the command
+	 * @remarks
+	 * This function outputs a specially formatted string to stdout that the Actions
+	 * runner interprets as a command. These commands can control workflow behavior,
+	 * set outputs, create annotations, mask values, and more.
 	 *
 	 * Command Format:
 	 *   ::name key=value,key=value::message
 	 *
-	 * Examples:
-	 *   ::warning::This is the message
-	 *   ::set-env name=MY_VAR::some value
+	 * @example
+	 * ```typescript
+	 * // Issue a warning annotation
+	 * issueCommand('warning', {}, 'This is a warning message');
+	 * // Output: ::warning::This is a warning message
+	 *
+	 * // Set an environment variable
+	 * issueCommand('set-env', { name: 'MY_VAR' }, 'some value');
+	 * // Output: ::set-env name=MY_VAR::some value
+	 *
+	 * // Add a secret mask
+	 * issueCommand('add-mask', {}, 'secretValue123');
+	 * // Output: ::add-mask::secretValue123
+	 * ```
+	 *
+	 * @internal
+	 * This is an internal utility function that powers the public API functions
+	 * such as setSecret, warning, error, and exportVariable.
 	 */
 	function issueCommand(command, properties, message) {
 	    const cmd = new Command(command, properties, message);
 	    process.stdout.write(cmd.toString() + os.EOL);
 	}
-	command.issueCommand = issueCommand;
 	function issue(name, message = '') {
 	    issueCommand(name, {}, message);
 	}
-	command.issue = issue;
 	const CMD_STRING = '::';
 	class Command {
 	    constructor(command, properties, message) {
@@ -245,15 +276,26 @@ function requireFileCommand () {
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (fileCommand && fileCommand.__importStar) || function (mod) {
-	    if (mod && mod.__esModule) return mod;
-	    var result = {};
-	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	    __setModuleDefault(result, mod);
-	    return result;
-	};
+	var __importStar = (fileCommand && fileCommand.__importStar) || (function () {
+	    var ownKeys = function(o) {
+	        ownKeys = Object.getOwnPropertyNames || function (o) {
+	            var ar = [];
+	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+	            return ar;
+	        };
+	        return ownKeys(o);
+	    };
+	    return function (mod) {
+	        if (mod && mod.__esModule) return mod;
+	        var result = {};
+	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+	        __setModuleDefault(result, mod);
+	        return result;
+	    };
+	})();
 	Object.defineProperty(fileCommand, "__esModule", { value: true });
-	fileCommand.prepareKeyValueMessage = fileCommand.issueFileCommand = void 0;
+	fileCommand.issueFileCommand = issueFileCommand;
+	fileCommand.prepareKeyValueMessage = prepareKeyValueMessage;
 	// We use any as a valid input type
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const crypto = __importStar(require$$0$1);
@@ -272,7 +314,6 @@ function requireFileCommand () {
 	        encoding: 'utf8'
 	    });
 	}
-	fileCommand.issueFileCommand = issueFileCommand;
 	function prepareKeyValueMessage(key, value) {
 	    const delimiter = `ghadelimiter_${crypto.randomUUID()}`;
 	    const convertedValue = (0, utils_1.toCommandValue)(value);
@@ -287,7 +328,6 @@ function requireFileCommand () {
 	    }
 	    return `${key}<<${delimiter}${os.EOL}${convertedValue}${os.EOL}${delimiter}`;
 	}
-	fileCommand.prepareKeyValueMessage = prepareKeyValueMessage;
 	
 	return fileCommand;
 }
@@ -304,7 +344,8 @@ function requireProxy$1 () {
 	if (hasRequiredProxy$1) return proxy$1;
 	hasRequiredProxy$1 = 1;
 	Object.defineProperty(proxy$1, "__esModule", { value: true });
-	proxy$1.checkBypass = proxy$1.getProxyUrl = void 0;
+	proxy$1.getProxyUrl = getProxyUrl;
+	proxy$1.checkBypass = checkBypass;
 	function getProxyUrl(reqUrl) {
 	    const usingSsl = reqUrl.protocol === 'https:';
 	    if (checkBypass(reqUrl)) {
@@ -331,7 +372,6 @@ function requireProxy$1 () {
 	        return undefined;
 	    }
 	}
-	proxy$1.getProxyUrl = getProxyUrl;
 	function checkBypass(reqUrl) {
 	    if (!reqUrl.hostname) {
 	        return false;
@@ -375,7 +415,6 @@ function requireProxy$1 () {
 	    }
 	    return false;
 	}
-	proxy$1.checkBypass = checkBypass;
 	function isLoopbackAddress(host) {
 	    const hostLower = host.toLowerCase();
 	    return (hostLower === 'localhost' ||
@@ -24404,13 +24443,23 @@ function requireLib$1 () {
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (lib$1 && lib$1.__importStar) || function (mod) {
-	    if (mod && mod.__esModule) return mod;
-	    var result = {};
-	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	    __setModuleDefault(result, mod);
-	    return result;
-	};
+	var __importStar = (lib$1 && lib$1.__importStar) || (function () {
+	    var ownKeys = function(o) {
+	        ownKeys = Object.getOwnPropertyNames || function (o) {
+	            var ar = [];
+	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+	            return ar;
+	        };
+	        return ownKeys(o);
+	    };
+	    return function (mod) {
+	        if (mod && mod.__esModule) return mod;
+	        var result = {};
+	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+	        __setModuleDefault(result, mod);
+	        return result;
+	    };
+	})();
 	var __awaiter = (lib$1 && lib$1.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 	    return new (P || (P = Promise))(function (resolve, reject) {
@@ -24421,7 +24470,9 @@ function requireLib$1 () {
 	    });
 	};
 	Object.defineProperty(lib$1, "__esModule", { value: true });
-	lib$1.HttpClient = lib$1.isHttps = lib$1.HttpClientResponse = lib$1.HttpClientError = lib$1.getProxyUrl = lib$1.MediaTypes = lib$1.Headers = lib$1.HttpCodes = void 0;
+	lib$1.HttpClient = lib$1.HttpClientResponse = lib$1.HttpClientError = lib$1.MediaTypes = lib$1.Headers = lib$1.HttpCodes = void 0;
+	lib$1.getProxyUrl = getProxyUrl;
+	lib$1.isHttps = isHttps;
 	const http = __importStar(require$$2$1);
 	const https = __importStar(require$$1$2);
 	const pm = __importStar(requireProxy$1());
@@ -24474,7 +24525,6 @@ function requireLib$1 () {
 	    const proxyUrl = pm.getProxyUrl(new URL(serverUrl));
 	    return proxyUrl ? proxyUrl.href : '';
 	}
-	lib$1.getProxyUrl = getProxyUrl;
 	const HttpRedirectCodes = [
 	    HttpCodes.MovedPermanently,
 	    HttpCodes.ResourceMoved,
@@ -24535,7 +24585,6 @@ function requireLib$1 () {
 	    const parsedUrl = new URL(requestUrl);
 	    return parsedUrl.protocol === 'https:';
 	}
-	lib$1.isHttps = isHttps;
 	class HttpClient {
 	    constructor(userAgent, handlers, requestOptions) {
 	        this._ignoreSslError = false;
@@ -24546,7 +24595,7 @@ function requireLib$1 () {
 	        this._maxRetries = 1;
 	        this._keepAlive = false;
 	        this._disposed = false;
-	        this.userAgent = userAgent;
+	        this.userAgent = this._getUserAgentWithOrchestrationId(userAgent);
 	        this.handlers = handlers || [];
 	        this.requestOptions = requestOptions;
 	        if (requestOptions) {
@@ -24618,36 +24667,39 @@ function requireLib$1 () {
 	     * Gets a typed object from an endpoint
 	     * Be aware that not found returns a null.  Other errors (4xx, 5xx) reject the promise
 	     */
-	    getJson(requestUrl, additionalHeaders = {}) {
-	        return __awaiter(this, void 0, void 0, function* () {
+	    getJson(requestUrl_1) {
+	        return __awaiter(this, arguments, void 0, function* (requestUrl, additionalHeaders = {}) {
 	            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
 	            const res = yield this.get(requestUrl, additionalHeaders);
 	            return this._processResponse(res, this.requestOptions);
 	        });
 	    }
-	    postJson(requestUrl, obj, additionalHeaders = {}) {
-	        return __awaiter(this, void 0, void 0, function* () {
+	    postJson(requestUrl_1, obj_1) {
+	        return __awaiter(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
 	            const data = JSON.stringify(obj, null, 2);
 	            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
-	            additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+	            additionalHeaders[Headers.ContentType] =
+	                this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes.ApplicationJson);
 	            const res = yield this.post(requestUrl, data, additionalHeaders);
 	            return this._processResponse(res, this.requestOptions);
 	        });
 	    }
-	    putJson(requestUrl, obj, additionalHeaders = {}) {
-	        return __awaiter(this, void 0, void 0, function* () {
+	    putJson(requestUrl_1, obj_1) {
+	        return __awaiter(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
 	            const data = JSON.stringify(obj, null, 2);
 	            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
-	            additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+	            additionalHeaders[Headers.ContentType] =
+	                this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes.ApplicationJson);
 	            const res = yield this.put(requestUrl, data, additionalHeaders);
 	            return this._processResponse(res, this.requestOptions);
 	        });
 	    }
-	    patchJson(requestUrl, obj, additionalHeaders = {}) {
-	        return __awaiter(this, void 0, void 0, function* () {
+	    patchJson(requestUrl_1, obj_1) {
+	        return __awaiter(this, arguments, void 0, function* (requestUrl, obj, additionalHeaders = {}) {
 	            const data = JSON.stringify(obj, null, 2);
 	            additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
-	            additionalHeaders[Headers.ContentType] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.ContentType, MediaTypes.ApplicationJson);
+	            additionalHeaders[Headers.ContentType] =
+	                this._getExistingOrDefaultContentTypeHeader(additionalHeaders, MediaTypes.ApplicationJson);
 	            const res = yield this.patch(requestUrl, data, additionalHeaders);
 	            return this._processResponse(res, this.requestOptions);
 	        });
@@ -24876,12 +24928,73 @@ function requireLib$1 () {
 	        }
 	        return lowercaseKeys(headers || {});
 	    }
+	    /**
+	     * Gets an existing header value or returns a default.
+	     * Handles converting number header values to strings since HTTP headers must be strings.
+	     * Note: This returns string | string[] since some headers can have multiple values.
+	     * For headers that must always be a single string (like Content-Type), use the
+	     * specialized _getExistingOrDefaultContentTypeHeader method instead.
+	     */
 	    _getExistingOrDefaultHeader(additionalHeaders, header, _default) {
 	        let clientHeader;
 	        if (this.requestOptions && this.requestOptions.headers) {
-	            clientHeader = lowercaseKeys(this.requestOptions.headers)[header];
+	            const headerValue = lowercaseKeys(this.requestOptions.headers)[header];
+	            if (headerValue) {
+	                clientHeader =
+	                    typeof headerValue === 'number' ? headerValue.toString() : headerValue;
+	            }
 	        }
-	        return additionalHeaders[header] || clientHeader || _default;
+	        const additionalValue = additionalHeaders[header];
+	        if (additionalValue !== undefined) {
+	            return typeof additionalValue === 'number'
+	                ? additionalValue.toString()
+	                : additionalValue;
+	        }
+	        if (clientHeader !== undefined) {
+	            return clientHeader;
+	        }
+	        return _default;
+	    }
+	    /**
+	     * Specialized version of _getExistingOrDefaultHeader for Content-Type header.
+	     * Always returns a single string (not an array) since Content-Type should be a single value.
+	     * Converts arrays to comma-separated strings and numbers to strings to ensure type safety.
+	     * This was split from _getExistingOrDefaultHeader to provide stricter typing for callers
+	     * that assign the result to places expecting a string (e.g., additionalHeaders[Headers.ContentType]).
+	     */
+	    _getExistingOrDefaultContentTypeHeader(additionalHeaders, _default) {
+	        let clientHeader;
+	        if (this.requestOptions && this.requestOptions.headers) {
+	            const headerValue = lowercaseKeys(this.requestOptions.headers)[Headers.ContentType];
+	            if (headerValue) {
+	                if (typeof headerValue === 'number') {
+	                    clientHeader = String(headerValue);
+	                }
+	                else if (Array.isArray(headerValue)) {
+	                    clientHeader = headerValue.join(', ');
+	                }
+	                else {
+	                    clientHeader = headerValue;
+	                }
+	            }
+	        }
+	        const additionalValue = additionalHeaders[Headers.ContentType];
+	        // Return the first non-undefined value, converting numbers or arrays to strings if necessary
+	        if (additionalValue !== undefined) {
+	            if (typeof additionalValue === 'number') {
+	                return String(additionalValue);
+	            }
+	            else if (Array.isArray(additionalValue)) {
+	                return additionalValue.join(', ');
+	            }
+	            else {
+	                return additionalValue;
+	            }
+	        }
+	        if (clientHeader !== undefined) {
+	            return clientHeader;
+	        }
+	        return _default;
 	    }
 	    _getAgent(parsedUrl) {
 	        let agent;
@@ -24961,6 +25074,17 @@ function requireLib$1 () {
 	            });
 	        }
 	        return proxyAgent;
+	    }
+	    _getUserAgentWithOrchestrationId(userAgent) {
+	        const baseUserAgent = userAgent || 'actions/http-client';
+	        const orchId = process.env['ACTIONS_ORCHESTRATION_ID'];
+	        if (orchId) {
+	            // Sanitize the orchestration ID to ensure it contains only valid characters
+	            // Valid characters: 0-9, a-z, _, -, .
+	            const sanitizedId = orchId.replace(/[^a-z0-9_.-]/gi, '_');
+	            return `${baseUserAgent} actions_orchestration_id/${sanitizedId}`;
+	        }
+	        return baseUserAgent;
 	    }
 	    _performExponentialBackoff(retryNumber) {
 	        return __awaiter(this, void 0, void 0, function* () {
@@ -25173,8 +25297,8 @@ function requireOidcUtils () {
 	        return runtimeUrl;
 	    }
 	    static getCall(id_token_url) {
-	        var _a;
 	        return __awaiter(this, void 0, void 0, function* () {
+	            var _a;
 	            const httpclient = OidcClient.createHttpClient();
 	            const res = yield httpclient
 	                .getJson(id_token_url)
@@ -25532,15 +25656,27 @@ function requirePathUtils () {
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (pathUtils && pathUtils.__importStar) || function (mod) {
-	    if (mod && mod.__esModule) return mod;
-	    var result = {};
-	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	    __setModuleDefault(result, mod);
-	    return result;
-	};
+	var __importStar = (pathUtils && pathUtils.__importStar) || (function () {
+	    var ownKeys = function(o) {
+	        ownKeys = Object.getOwnPropertyNames || function (o) {
+	            var ar = [];
+	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+	            return ar;
+	        };
+	        return ownKeys(o);
+	    };
+	    return function (mod) {
+	        if (mod && mod.__esModule) return mod;
+	        var result = {};
+	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+	        __setModuleDefault(result, mod);
+	        return result;
+	    };
+	})();
 	Object.defineProperty(pathUtils, "__esModule", { value: true });
-	pathUtils.toPlatformPath = pathUtils.toWin32Path = pathUtils.toPosixPath = void 0;
+	pathUtils.toPosixPath = toPosixPath;
+	pathUtils.toWin32Path = toWin32Path;
+	pathUtils.toPlatformPath = toPlatformPath;
 	const path = __importStar(require$$1__default);
 	/**
 	 * toPosixPath converts the given path to the posix form. On Windows, \\ will be
@@ -25552,7 +25688,6 @@ function requirePathUtils () {
 	function toPosixPath(pth) {
 	    return pth.replace(/[\\]/g, '/');
 	}
-	pathUtils.toPosixPath = toPosixPath;
 	/**
 	 * toWin32Path converts the given path to the win32 form. On Linux, / will be
 	 * replaced with \\.
@@ -25563,7 +25698,6 @@ function requirePathUtils () {
 	function toWin32Path(pth) {
 	    return pth.replace(/[/]/g, '\\');
 	}
-	pathUtils.toWin32Path = toWin32Path;
 	/**
 	 * toPlatformPath converts the given path to a platform-specific path. It does
 	 * this by replacing instances of / and \ with the platform-specific path
@@ -25575,7 +25709,6 @@ function requirePathUtils () {
 	function toPlatformPath(pth) {
 	    return pth.replace(/[/\\]/g, path.sep);
 	}
-	pathUtils.toPlatformPath = toPlatformPath;
 	
 	return pathUtils;
 }
@@ -25598,7 +25731,11 @@ function requireIoUtil () {
 	(function (exports) {
 		var __createBinding = (ioUtil && ioUtil.__createBinding) || (Object.create ? (function(o, m, k, k2) {
 		    if (k2 === undefined) k2 = k;
-		    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+		    var desc = Object.getOwnPropertyDescriptor(m, k);
+		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+		      desc = { enumerable: true, get: function() { return m[k]; } };
+		    }
+		    Object.defineProperty(o, k2, desc);
 		}) : (function(o, m, k, k2) {
 		    if (k2 === undefined) k2 = k;
 		    o[k2] = m[k];
@@ -25608,13 +25745,23 @@ function requireIoUtil () {
 		}) : function(o, v) {
 		    o["default"] = v;
 		});
-		var __importStar = (ioUtil && ioUtil.__importStar) || function (mod) {
-		    if (mod && mod.__esModule) return mod;
-		    var result = {};
-		    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-		    __setModuleDefault(result, mod);
-		    return result;
-		};
+		var __importStar = (ioUtil && ioUtil.__importStar) || (function () {
+		    var ownKeys = function(o) {
+		        ownKeys = Object.getOwnPropertyNames || function (o) {
+		            var ar = [];
+		            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+		            return ar;
+		        };
+		        return ownKeys(o);
+		    };
+		    return function (mod) {
+		        if (mod && mod.__esModule) return mod;
+		        var result = {};
+		        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+		        __setModuleDefault(result, mod);
+		        return result;
+		    };
+		})();
 		var __awaiter = (ioUtil && ioUtil.__awaiter) || function (thisArg, _arguments, P, generator) {
 		    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 		    return new (P || (P = Promise))(function (resolve, reject) {
@@ -25626,21 +25773,49 @@ function requireIoUtil () {
 		};
 		var _a;
 		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.getCmdPath = exports.tryGetExecutablePath = exports.isRooted = exports.isDirectory = exports.exists = exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readlink = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+		exports.READONLY = exports.UV_FS_O_EXLOCK = exports.IS_WINDOWS = exports.unlink = exports.symlink = exports.stat = exports.rmdir = exports.rm = exports.rename = exports.readdir = exports.open = exports.mkdir = exports.lstat = exports.copyFile = exports.chmod = void 0;
+		exports.readlink = readlink;
+		exports.exists = exists;
+		exports.isDirectory = isDirectory;
+		exports.isRooted = isRooted;
+		exports.tryGetExecutablePath = tryGetExecutablePath;
+		exports.getCmdPath = getCmdPath;
 		const fs = __importStar(require$$1$1);
 		const path = __importStar(require$$1__default);
 		_a = fs.promises
 		// export const {open} = 'fs'
-		, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.readlink = _a.readlink, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
+		, exports.chmod = _a.chmod, exports.copyFile = _a.copyFile, exports.lstat = _a.lstat, exports.mkdir = _a.mkdir, exports.open = _a.open, exports.readdir = _a.readdir, exports.rename = _a.rename, exports.rm = _a.rm, exports.rmdir = _a.rmdir, exports.stat = _a.stat, exports.symlink = _a.symlink, exports.unlink = _a.unlink;
 		// export const {open} = 'fs'
 		exports.IS_WINDOWS = process.platform === 'win32';
+		/**
+		 * Custom implementation of readlink to ensure Windows junctions
+		 * maintain trailing backslash for backward compatibility with Node.js < 24
+		 *
+		 * In Node.js 20, Windows junctions (directory symlinks) always returned paths
+		 * with trailing backslashes. Node.js 24 removed this behavior, which breaks
+		 * code that relied on this format for path operations.
+		 *
+		 * This implementation restores the Node 20 behavior by adding a trailing
+		 * backslash to all junction results on Windows.
+		 */
+		function readlink(fsPath) {
+		    return __awaiter(this, void 0, void 0, function* () {
+		        const result = yield fs.promises.readlink(fsPath);
+		        // On Windows, restore Node 20 behavior: add trailing backslash to all results
+		        // since junctions on Windows are always directory links
+		        if (exports.IS_WINDOWS && !result.endsWith('\\')) {
+		            return `${result}\\`;
+		        }
+		        return result;
+		    });
+		}
 		// See https://github.com/nodejs/node/blob/d0153aee367422d0858105abec186da4dff0a0c5/deps/uv/include/uv/win.h#L691
 		exports.UV_FS_O_EXLOCK = 0x10000000;
 		exports.READONLY = fs.constants.O_RDONLY;
 		function exists(fsPath) {
 		    return __awaiter(this, void 0, void 0, function* () {
 		        try {
-		            yield exports.stat(fsPath);
+		            yield (0, exports.stat)(fsPath);
 		        }
 		        catch (err) {
 		            if (err.code === 'ENOENT') {
@@ -25651,14 +25826,12 @@ function requireIoUtil () {
 		        return true;
 		    });
 		}
-		exports.exists = exists;
-		function isDirectory(fsPath, useStat = false) {
-		    return __awaiter(this, void 0, void 0, function* () {
-		        const stats = useStat ? yield exports.stat(fsPath) : yield exports.lstat(fsPath);
+		function isDirectory(fsPath_1) {
+		    return __awaiter(this, arguments, void 0, function* (fsPath, useStat = false) {
+		        const stats = useStat ? yield (0, exports.stat)(fsPath) : yield (0, exports.lstat)(fsPath);
 		        return stats.isDirectory();
 		    });
 		}
-		exports.isDirectory = isDirectory;
 		/**
 		 * On OSX/Linux, true if path starts with '/'. On Windows, true for paths like:
 		 * \, \hello, \\hello\share, C:, and C:\hello (and corresponding alternate separator cases).
@@ -25674,7 +25847,6 @@ function requireIoUtil () {
 		    }
 		    return p.startsWith('/');
 		}
-		exports.isRooted = isRooted;
 		/**
 		 * Best effort attempt to determine whether a file exists and is executable.
 		 * @param filePath    file path to check
@@ -25686,7 +25858,7 @@ function requireIoUtil () {
 		        let stats = undefined;
 		        try {
 		            // test file exists
-		            stats = yield exports.stat(filePath);
+		            stats = yield (0, exports.stat)(filePath);
 		        }
 		        catch (err) {
 		            if (err.code !== 'ENOENT') {
@@ -25714,7 +25886,7 @@ function requireIoUtil () {
 		            filePath = originalFilePath + extension;
 		            stats = undefined;
 		            try {
-		                stats = yield exports.stat(filePath);
+		                stats = yield (0, exports.stat)(filePath);
 		            }
 		            catch (err) {
 		                if (err.code !== 'ENOENT') {
@@ -25728,7 +25900,7 @@ function requireIoUtil () {
 		                    try {
 		                        const directory = path.dirname(filePath);
 		                        const upperName = path.basename(filePath).toUpperCase();
-		                        for (const actualName of yield exports.readdir(directory)) {
+		                        for (const actualName of yield (0, exports.readdir)(directory)) {
 		                            if (upperName === actualName.toUpperCase()) {
 		                                filePath = path.join(directory, actualName);
 		                                break;
@@ -25751,7 +25923,6 @@ function requireIoUtil () {
 		        return '';
 		    });
 		}
-		exports.tryGetExecutablePath = tryGetExecutablePath;
 		function normalizeSeparators(p) {
 		    p = p || '';
 		    if (exports.IS_WINDOWS) {
@@ -25768,15 +25939,18 @@ function requireIoUtil () {
 		//   256 128 64 32 16 8 4 2 1
 		function isUnixExecutable(stats) {
 		    return ((stats.mode & 1) > 0 ||
-		        ((stats.mode & 8) > 0 && stats.gid === process.getgid()) ||
-		        ((stats.mode & 64) > 0 && stats.uid === process.getuid()));
+		        ((stats.mode & 8) > 0 &&
+		            process.getgid !== undefined &&
+		            stats.gid === process.getgid()) ||
+		        ((stats.mode & 64) > 0 &&
+		            process.getuid !== undefined &&
+		            stats.uid === process.getuid()));
 		}
 		// Get the path of cmd.exe in windows
 		function getCmdPath() {
 		    var _a;
 		    return (_a = process.env['COMSPEC']) !== null && _a !== void 0 ? _a : `cmd.exe`;
 		}
-		exports.getCmdPath = getCmdPath;
 		
 	} (ioUtil));
 	return ioUtil;
@@ -25789,7 +25963,11 @@ function requireIo () {
 	hasRequiredIo = 1;
 	var __createBinding = (io && io.__createBinding) || (Object.create ? (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
-	    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+	    var desc = Object.getOwnPropertyDescriptor(m, k);
+	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+	      desc = { enumerable: true, get: function() { return m[k]; } };
+	    }
+	    Object.defineProperty(o, k2, desc);
 	}) : (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
 	    o[k2] = m[k];
@@ -25799,13 +25977,23 @@ function requireIo () {
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (io && io.__importStar) || function (mod) {
-	    if (mod && mod.__esModule) return mod;
-	    var result = {};
-	    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	    __setModuleDefault(result, mod);
-	    return result;
-	};
+	var __importStar = (io && io.__importStar) || (function () {
+	    var ownKeys = function(o) {
+	        ownKeys = Object.getOwnPropertyNames || function (o) {
+	            var ar = [];
+	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+	            return ar;
+	        };
+	        return ownKeys(o);
+	    };
+	    return function (mod) {
+	        if (mod && mod.__esModule) return mod;
+	        var result = {};
+	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+	        __setModuleDefault(result, mod);
+	        return result;
+	    };
+	})();
 	var __awaiter = (io && io.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 	    return new (P || (P = Promise))(function (resolve, reject) {
@@ -25816,7 +26004,12 @@ function requireIo () {
 	    });
 	};
 	Object.defineProperty(io, "__esModule", { value: true });
-	io.findInPath = io.which = io.mkdirP = io.rmRF = io.mv = io.cp = void 0;
+	io.cp = cp;
+	io.mv = mv;
+	io.rmRF = rmRF;
+	io.mkdirP = mkdirP;
+	io.which = which;
+	io.findInPath = findInPath;
 	const assert_1 = require$$0$3;
 	const path = __importStar(require$$1__default);
 	const ioUtil = __importStar(requireIoUtil());
@@ -25828,8 +26021,8 @@ function requireIo () {
 	 * @param     dest      destination path
 	 * @param     options   optional. See CopyOptions.
 	 */
-	function cp(source, dest, options = {}) {
-	    return __awaiter(this, void 0, void 0, function* () {
+	function cp(source_1, dest_1) {
+	    return __awaiter(this, arguments, void 0, function* (source, dest, options = {}) {
 	        const { force, recursive, copySourceDirectory } = readCopyOptions(options);
 	        const destStat = (yield ioUtil.exists(dest)) ? yield ioUtil.stat(dest) : null;
 	        // Dest is an existing file, but not forcing
@@ -25861,7 +26054,6 @@ function requireIo () {
 	        }
 	    });
 	}
-	io.cp = cp;
 	/**
 	 * Moves a path.
 	 *
@@ -25869,8 +26061,8 @@ function requireIo () {
 	 * @param     dest      destination path
 	 * @param     options   optional. See MoveOptions.
 	 */
-	function mv(source, dest, options = {}) {
-	    return __awaiter(this, void 0, void 0, function* () {
+	function mv(source_1, dest_1) {
+	    return __awaiter(this, arguments, void 0, function* (source, dest, options = {}) {
 	        if (yield ioUtil.exists(dest)) {
 	            let destExists = true;
 	            if (yield ioUtil.isDirectory(dest)) {
@@ -25891,7 +26083,6 @@ function requireIo () {
 	        yield ioUtil.rename(source, dest);
 	    });
 	}
-	io.mv = mv;
 	/**
 	 * Remove a path recursively with force
 	 *
@@ -25920,7 +26111,6 @@ function requireIo () {
 	        }
 	    });
 	}
-	io.rmRF = rmRF;
 	/**
 	 * Make a directory.  Creates the full path with folders in between
 	 * Will throw if it fails
@@ -25930,11 +26120,10 @@ function requireIo () {
 	 */
 	function mkdirP(fsPath) {
 	    return __awaiter(this, void 0, void 0, function* () {
-	        assert_1.ok(fsPath, 'a path argument must be provided');
+	        (0, assert_1.ok)(fsPath, 'a path argument must be provided');
 	        yield ioUtil.mkdir(fsPath, { recursive: true });
 	    });
 	}
-	io.mkdirP = mkdirP;
 	/**
 	 * Returns path of a tool had the tool actually been invoked.  Resolves via paths.
 	 * If you check and the tool does not exist, it will throw.
@@ -25968,7 +26157,6 @@ function requireIo () {
 	        return '';
 	    });
 	}
-	io.which = which;
 	/**
 	 * Returns a list of all occurrences of the given tool on the system path.
 	 *
@@ -26025,7 +26213,6 @@ function requireIo () {
 	        return matches;
 	    });
 	}
-	io.findInPath = findInPath;
 	function readCopyOptions(options) {
 	    const force = options.force == null ? true : options.force;
 	    const recursive = Boolean(options.recursive);
@@ -26095,7 +26282,11 @@ function requireToolrunner () {
 	hasRequiredToolrunner = 1;
 	var __createBinding = (toolrunner && toolrunner.__createBinding) || (Object.create ? (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
-	    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+	    var desc = Object.getOwnPropertyDescriptor(m, k);
+	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+	      desc = { enumerable: true, get: function() { return m[k]; } };
+	    }
+	    Object.defineProperty(o, k2, desc);
 	}) : (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
 	    o[k2] = m[k];
@@ -26105,13 +26296,23 @@ function requireToolrunner () {
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (toolrunner && toolrunner.__importStar) || function (mod) {
-	    if (mod && mod.__esModule) return mod;
-	    var result = {};
-	    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	    __setModuleDefault(result, mod);
-	    return result;
-	};
+	var __importStar = (toolrunner && toolrunner.__importStar) || (function () {
+	    var ownKeys = function(o) {
+	        ownKeys = Object.getOwnPropertyNames || function (o) {
+	            var ar = [];
+	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+	            return ar;
+	        };
+	        return ownKeys(o);
+	    };
+	    return function (mod) {
+	        if (mod && mod.__esModule) return mod;
+	        var result = {};
+	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+	        __setModuleDefault(result, mod);
+	        return result;
+	    };
+	})();
 	var __awaiter = (toolrunner && toolrunner.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 	    return new (P || (P = Promise))(function (resolve, reject) {
@@ -26122,7 +26323,8 @@ function requireToolrunner () {
 	    });
 	};
 	Object.defineProperty(toolrunner, "__esModule", { value: true });
-	toolrunner.argStringToArray = toolrunner.ToolRunner = void 0;
+	toolrunner.ToolRunner = void 0;
+	toolrunner.argStringToArray = argStringToArray;
 	const os = __importStar(require$$0);
 	const events = __importStar(require$$4$1);
 	const child = __importStar(require$$2$3);
@@ -26354,10 +26556,7 @@ function requireToolrunner () {
 	            }
 	        }
 	        reverse += '"';
-	        return reverse
-	            .split('')
-	            .reverse()
-	            .join('');
+	        return reverse.split('').reverse().join('');
 	    }
 	    _uvQuoteCmdArg(arg) {
 	        // Tool runner wraps child_process.spawn() and needs to apply the same quoting as
@@ -26433,10 +26632,7 @@ function requireToolrunner () {
 	            }
 	        }
 	        reverse += '"';
-	        return reverse
-	            .split('')
-	            .reverse()
-	            .join('');
+	        return reverse.split('').reverse().join('');
 	    }
 	    _cloneExecOptions(options) {
 	        options = options || {};
@@ -26640,7 +26836,6 @@ function requireToolrunner () {
 	    }
 	    return args;
 	}
-	toolrunner.argStringToArray = argStringToArray;
 	class ExecState extends events.EventEmitter {
 	    constructor(options, toolPath) {
 	        super();
@@ -26669,7 +26864,7 @@ function requireToolrunner () {
 	            this._setResult();
 	        }
 	        else if (this.processExited) {
-	            this.timeout = timers_1.setTimeout(ExecState.HandleTimeout, this.delay, this);
+	            this.timeout = (0, timers_1.setTimeout)(ExecState.HandleTimeout, this.delay, this);
 	        }
 	    }
 	    _debug(message) {
@@ -26702,8 +26897,7 @@ function requireToolrunner () {
 	            return;
 	        }
 	        if (!state.processClosed && state.processExited) {
-	            const message = `The STDIO streams did not close within ${state.delay /
-	                1000} seconds of the exit event from process '${state.toolPath}'. This may indicate a child process inherited the STDIO streams and has not yet exited.`;
+	            const message = `The STDIO streams did not close within ${state.delay / 1000} seconds of the exit event from process '${state.toolPath}'. This may indicate a child process inherited the STDIO streams and has not yet exited.`;
 	            state._debug(message);
 	        }
 	        state._setResult();
@@ -26720,7 +26914,11 @@ function requireExec () {
 	hasRequiredExec = 1;
 	var __createBinding = (exec && exec.__createBinding) || (Object.create ? (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
-	    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+	    var desc = Object.getOwnPropertyDescriptor(m, k);
+	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+	      desc = { enumerable: true, get: function() { return m[k]; } };
+	    }
+	    Object.defineProperty(o, k2, desc);
 	}) : (function(o, m, k, k2) {
 	    if (k2 === undefined) k2 = k;
 	    o[k2] = m[k];
@@ -26730,13 +26928,23 @@ function requireExec () {
 	}) : function(o, v) {
 	    o["default"] = v;
 	});
-	var __importStar = (exec && exec.__importStar) || function (mod) {
-	    if (mod && mod.__esModule) return mod;
-	    var result = {};
-	    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-	    __setModuleDefault(result, mod);
-	    return result;
-	};
+	var __importStar = (exec && exec.__importStar) || (function () {
+	    var ownKeys = function(o) {
+	        ownKeys = Object.getOwnPropertyNames || function (o) {
+	            var ar = [];
+	            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+	            return ar;
+	        };
+	        return ownKeys(o);
+	    };
+	    return function (mod) {
+	        if (mod && mod.__esModule) return mod;
+	        var result = {};
+	        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+	        __setModuleDefault(result, mod);
+	        return result;
+	    };
+	})();
 	var __awaiter = (exec && exec.__awaiter) || function (thisArg, _arguments, P, generator) {
 	    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 	    return new (P || (P = Promise))(function (resolve, reject) {
@@ -26747,7 +26955,8 @@ function requireExec () {
 	    });
 	};
 	Object.defineProperty(exec, "__esModule", { value: true });
-	exec.getExecOutput = exec.exec = void 0;
+	exec.exec = exec$1;
+	exec.getExecOutput = getExecOutput;
 	const string_decoder_1 = require$$6;
 	const tr = __importStar(requireToolrunner());
 	/**
@@ -26773,7 +26982,6 @@ function requireExec () {
 	        return runner.exec();
 	    });
 	}
-	exec.exec = exec$1;
 	/**
 	 * Exec a command and get the output.
 	 * Output will be streamed to the live console.
@@ -26785,8 +26993,8 @@ function requireExec () {
 	 * @returns   Promise<ExecOutput>   exit code, stdout, and stderr
 	 */
 	function getExecOutput(commandLine, args, options) {
-	    var _a, _b;
 	    return __awaiter(this, void 0, void 0, function* () {
+	        var _a, _b;
 	        let stdout = '';
 	        let stderr = '';
 	        //Using string decoder covers the case where a mult-byte character is split
@@ -26818,7 +27026,6 @@ function requireExec () {
 	        };
 	    });
 	}
-	exec.getExecOutput = getExecOutput;
 	
 	return exec;
 }
@@ -26845,13 +27052,23 @@ function requirePlatform () {
 		}) : function(o, v) {
 		    o["default"] = v;
 		});
-		var __importStar = (platform && platform.__importStar) || function (mod) {
-		    if (mod && mod.__esModule) return mod;
-		    var result = {};
-		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-		    __setModuleDefault(result, mod);
-		    return result;
-		};
+		var __importStar = (platform && platform.__importStar) || (function () {
+		    var ownKeys = function(o) {
+		        ownKeys = Object.getOwnPropertyNames || function (o) {
+		            var ar = [];
+		            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+		            return ar;
+		        };
+		        return ownKeys(o);
+		    };
+		    return function (mod) {
+		        if (mod && mod.__esModule) return mod;
+		        var result = {};
+		        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+		        __setModuleDefault(result, mod);
+		        return result;
+		    };
+		})();
 		var __awaiter = (platform && platform.__awaiter) || function (thisArg, _arguments, P, generator) {
 		    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 		    return new (P || (P = Promise))(function (resolve, reject) {
@@ -26865,7 +27082,8 @@ function requirePlatform () {
 		    return (mod && mod.__esModule) ? mod : { "default": mod };
 		};
 		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.getDetails = exports.isLinux = exports.isMacOS = exports.isWindows = exports.arch = exports.platform = void 0;
+		exports.isLinux = exports.isMacOS = exports.isWindows = exports.arch = exports.platform = void 0;
+		exports.getDetails = getDetails;
 		const os_1 = __importDefault(require$$0);
 		const exec = __importStar(requireExec());
 		const getWindowsInfo = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -26920,7 +27138,6 @@ function requirePlatform () {
 		            isLinux: exports.isLinux });
 		    });
 		}
-		exports.getDetails = getDetails;
 		
 	} (platform));
 	return platform;
@@ -26948,13 +27165,23 @@ function requireCore () {
 		}) : function(o, v) {
 		    o["default"] = v;
 		});
-		var __importStar = (core$1 && core$1.__importStar) || function (mod) {
-		    if (mod && mod.__esModule) return mod;
-		    var result = {};
-		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-		    __setModuleDefault(result, mod);
-		    return result;
-		};
+		var __importStar = (core$1 && core$1.__importStar) || (function () {
+		    var ownKeys = function(o) {
+		        ownKeys = Object.getOwnPropertyNames || function (o) {
+		            var ar = [];
+		            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+		            return ar;
+		        };
+		        return ownKeys(o);
+		    };
+		    return function (mod) {
+		        if (mod && mod.__esModule) return mod;
+		        var result = {};
+		        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+		        __setModuleDefault(result, mod);
+		        return result;
+		    };
+		})();
 		var __awaiter = (core$1 && core$1.__awaiter) || function (thisArg, _arguments, P, generator) {
 		    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
 		    return new (P || (P = Promise))(function (resolve, reject) {
@@ -26965,7 +27192,28 @@ function requireCore () {
 		    });
 		};
 		Object.defineProperty(exports, "__esModule", { value: true });
-		exports.platform = exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = exports.markdownSummary = exports.summary = exports.getIDToken = exports.getState = exports.saveState = exports.group = exports.endGroup = exports.startGroup = exports.info = exports.notice = exports.warning = exports.error = exports.debug = exports.isDebug = exports.setFailed = exports.setCommandEcho = exports.setOutput = exports.getBooleanInput = exports.getMultilineInput = exports.getInput = exports.addPath = exports.setSecret = exports.exportVariable = exports.ExitCode = void 0;
+		exports.platform = exports.toPlatformPath = exports.toWin32Path = exports.toPosixPath = exports.markdownSummary = exports.summary = exports.ExitCode = void 0;
+		exports.exportVariable = exportVariable;
+		exports.setSecret = setSecret;
+		exports.addPath = addPath;
+		exports.getInput = getInput;
+		exports.getMultilineInput = getMultilineInput;
+		exports.getBooleanInput = getBooleanInput;
+		exports.setOutput = setOutput;
+		exports.setCommandEcho = setCommandEcho;
+		exports.setFailed = setFailed;
+		exports.isDebug = isDebug;
+		exports.debug = debug;
+		exports.error = error;
+		exports.warning = warning;
+		exports.notice = notice;
+		exports.info = info;
+		exports.startGroup = startGroup;
+		exports.endGroup = endGroup;
+		exports.group = group;
+		exports.saveState = saveState;
+		exports.getState = getState;
+		exports.getIDToken = getIDToken;
 		const command_1 = requireCommand();
 		const file_command_1 = requireFileCommand();
 		const utils_1 = requireUtils$3();
@@ -27004,15 +27252,38 @@ function requireCore () {
 		    }
 		    (0, command_1.issueCommand)('set-env', { name }, convertedVal);
 		}
-		exports.exportVariable = exportVariable;
 		/**
 		 * Registers a secret which will get masked from logs
-		 * @param secret value of the secret
+		 *
+		 * @param secret - Value of the secret to be masked
+		 * @remarks
+		 * This function instructs the Actions runner to mask the specified value in any
+		 * logs produced during the workflow run. Once registered, the secret value will
+		 * be replaced with asterisks (***) whenever it appears in console output, logs,
+		 * or error messages.
+		 *
+		 * This is useful for protecting sensitive information such as:
+		 * - API keys
+		 * - Access tokens
+		 * - Authentication credentials
+		 * - URL parameters containing signatures (SAS tokens)
+		 *
+		 * Note that masking only affects future logs; any previous appearances of the
+		 * secret in logs before calling this function will remain unmasked.
+		 *
+		 * @example
+		 * ```typescript
+		 * // Register an API token as a secret
+		 * const apiToken = "abc123xyz456";
+		 * setSecret(apiToken);
+		 *
+		 * // Now any logs containing this value will show *** instead
+		 * console.log(`Using token: ${apiToken}`); // Outputs: "Using token: ***"
+		 * ```
 		 */
 		function setSecret(secret) {
 		    (0, command_1.issueCommand)('add-mask', {}, secret);
 		}
-		exports.setSecret = setSecret;
 		/**
 		 * Prepends inputPath to the PATH (for this action and future actions)
 		 * @param inputPath
@@ -27027,7 +27298,6 @@ function requireCore () {
 		    }
 		    process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 		}
-		exports.addPath = addPath;
 		/**
 		 * Gets the value of an input.
 		 * Unless trimWhitespace is set to false in InputOptions, the value is also trimmed.
@@ -27047,7 +27317,6 @@ function requireCore () {
 		    }
 		    return val.trim();
 		}
-		exports.getInput = getInput;
 		/**
 		 * Gets the values of an multiline input.  Each value is also trimmed.
 		 *
@@ -27065,7 +27334,6 @@ function requireCore () {
 		    }
 		    return inputs.map(input => input.trim());
 		}
-		exports.getMultilineInput = getMultilineInput;
 		/**
 		 * Gets the input value of the boolean type in the YAML 1.2 "core schema" specification.
 		 * Support boolean input list: `true | True | TRUE | false | False | FALSE` .
@@ -27087,7 +27355,6 @@ function requireCore () {
 		    throw new TypeError(`Input does not meet YAML 1.2 "Core Schema" specification: ${name}\n` +
 		        `Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
 		}
-		exports.getBooleanInput = getBooleanInput;
 		/**
 		 * Sets the value of an output.
 		 *
@@ -27103,7 +27370,6 @@ function requireCore () {
 		    process.stdout.write(os.EOL);
 		    (0, command_1.issueCommand)('set-output', { name }, (0, utils_1.toCommandValue)(value));
 		}
-		exports.setOutput = setOutput;
 		/**
 		 * Enables or disables the echoing of commands into stdout for the rest of the step.
 		 * Echoing is disabled by default if ACTIONS_STEP_DEBUG is not set.
@@ -27112,7 +27378,6 @@ function requireCore () {
 		function setCommandEcho(enabled) {
 		    (0, command_1.issue)('echo', enabled ? 'on' : 'off');
 		}
-		exports.setCommandEcho = setCommandEcho;
 		//-----------------------------------------------------------------------
 		// Results
 		//-----------------------------------------------------------------------
@@ -27125,7 +27390,6 @@ function requireCore () {
 		    process.exitCode = ExitCode.Failure;
 		    error(message);
 		}
-		exports.setFailed = setFailed;
 		//-----------------------------------------------------------------------
 		// Logging Commands
 		//-----------------------------------------------------------------------
@@ -27135,7 +27399,6 @@ function requireCore () {
 		function isDebug() {
 		    return process.env['RUNNER_DEBUG'] === '1';
 		}
-		exports.isDebug = isDebug;
 		/**
 		 * Writes debug message to user log
 		 * @param message debug message
@@ -27143,7 +27406,6 @@ function requireCore () {
 		function debug(message) {
 		    (0, command_1.issueCommand)('debug', {}, message);
 		}
-		exports.debug = debug;
 		/**
 		 * Adds an error issue
 		 * @param message error issue message. Errors will be converted to string via toString()
@@ -27152,7 +27414,6 @@ function requireCore () {
 		function error(message, properties = {}) {
 		    (0, command_1.issueCommand)('error', (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
 		}
-		exports.error = error;
 		/**
 		 * Adds a warning issue
 		 * @param message warning issue message. Errors will be converted to string via toString()
@@ -27161,7 +27422,6 @@ function requireCore () {
 		function warning(message, properties = {}) {
 		    (0, command_1.issueCommand)('warning', (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
 		}
-		exports.warning = warning;
 		/**
 		 * Adds a notice issue
 		 * @param message notice issue message. Errors will be converted to string via toString()
@@ -27170,7 +27430,6 @@ function requireCore () {
 		function notice(message, properties = {}) {
 		    (0, command_1.issueCommand)('notice', (0, utils_1.toCommandProperties)(properties), message instanceof Error ? message.toString() : message);
 		}
-		exports.notice = notice;
 		/**
 		 * Writes info to log with console.log.
 		 * @param message info message
@@ -27178,7 +27437,6 @@ function requireCore () {
 		function info(message) {
 		    process.stdout.write(message + os.EOL);
 		}
-		exports.info = info;
 		/**
 		 * Begin an output group.
 		 *
@@ -27189,14 +27447,12 @@ function requireCore () {
 		function startGroup(name) {
 		    (0, command_1.issue)('group', name);
 		}
-		exports.startGroup = startGroup;
 		/**
 		 * End an output group.
 		 */
 		function endGroup() {
 		    (0, command_1.issue)('endgroup');
 		}
-		exports.endGroup = endGroup;
 		/**
 		 * Wrap an asynchronous function call in a group.
 		 *
@@ -27218,7 +27474,6 @@ function requireCore () {
 		        return result;
 		    });
 		}
-		exports.group = group;
 		//-----------------------------------------------------------------------
 		// Wrapper action state
 		//-----------------------------------------------------------------------
@@ -27236,7 +27491,6 @@ function requireCore () {
 		    }
 		    (0, command_1.issueCommand)('save-state', { name }, (0, utils_1.toCommandValue)(value));
 		}
-		exports.saveState = saveState;
 		/**
 		 * Gets the value of an state set by this action's main execution.
 		 *
@@ -27246,13 +27500,11 @@ function requireCore () {
 		function getState(name) {
 		    return process.env[`STATE_${name}`] || '';
 		}
-		exports.getState = getState;
 		function getIDToken(aud) {
 		    return __awaiter(this, void 0, void 0, function* () {
 		        return yield oidc_utils_1.OidcClient.getIDToken(aud);
 		    });
 		}
-		exports.getIDToken = getIDToken;
 		/**
 		 * Summary exports
 		 */
