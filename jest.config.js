@@ -21,6 +21,10 @@ export default {
   // },
   extensionsToTreatAsEsm: ['.ts'],
   moduleFileExtensions: ['ts', 'js'],
+  moduleNameMapper: {
+    '^@actions/core$': '<rootDir>/node_modules/@actions/core/lib/core.js',
+    '^@actions/github$': '<rootDir>/node_modules/@actions/github/lib/github.js'
+  },
   preset: 'ts-jest',
   reporters: ['default'],
   resolver: 'ts-jest-resolver',
