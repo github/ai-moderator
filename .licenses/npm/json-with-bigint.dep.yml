@@ -1,18 +1,17 @@
 ---
-name: picomatch
-version: 4.0.2
+name: json-with-bigint
+version: 3.5.7
 type: npm
-summary: Blazing fast and accurate glob matcher written in JavaScript, with no dependencies
-  and full support for standard and extended Bash glob features, including braces,
-  extglobs, POSIX brackets, and regular expressions.
-homepage: https://github.com/micromatch/picomatch
+summary: JS library that allows you to easily serialize and deserialize data with
+  BigInt values
+homepage:
 license: mit
 licenses:
 - sources: LICENSE
   text: |
-    The MIT License (MIT)
+    MIT License
 
-    Copyright (c) 2017-present, Jon Schlinkert.
+    Copyright (c) 2023 Ivan Korolenko
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -21,18 +20,14 @@ licenses:
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
 
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
-- sources: README.md
-  text: |-
-    Copyright © 2017-present, [Jon Schlinkert](https://github.com/jonschlinkert).
-    Released under the [MIT License](LICENSE).
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
 notices: []
