@@ -54,5 +54,5 @@ inputs:
     default: 'https://models.github.ai/inference'
 
 runs:
-  using: 'node16'
+  using: 'node24'
   main: 'dist/index.js'
