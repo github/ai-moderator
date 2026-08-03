@@ -33,7 +33,7 @@ jobs:
       models: read
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: github/ai-moderator@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
