@@ -41,7 +41,7 @@ jobs:
         uses: super-linter/super-linter/slim@61abc07d755095a68f4987d1c2c3d1d64408f1f9
         env:
           DEFAULT_BRANCH: main
-          FILTER_REGEX_EXCLUDE: dist/**/*
+          FILTER_REGEX_EXCLUDE: dist/**/*|coverage/**/*
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: ${{ github.workspace }}
           VALIDATE_ALL_CODEBASE: true
