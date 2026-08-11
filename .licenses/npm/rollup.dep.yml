@@ -1,6 +1,6 @@
 ---
 name: rollup
-version: 4.48.1
+version: 4.59.0
 type: npm
 summary: Next-generation ES module bundler
 homepage: https://rollupjs.org/
@@ -251,7 +251,7 @@ licenses:
     IN\n> THE SOFTWARE.\n\n---------------------------------------\n\n## is-reference\nLicense:
     MIT\nBy: Rich Harris\nRepository: git+https://github.com/Rich-Harris/is-reference.git\n\n---------------------------------------\n\n##
     locate-character\nLicense: MIT\nBy: Rich Harris\nRepository: git+https://gitlab.com/Rich-Harris/locate-character.git\n\n---------------------------------------\n\n##
-    magic-string\nLicense: MIT\nBy: Rich Harris\nRepository: https://github.com/rich-harris/magic-string.git\n\n>
+    magic-string\nLicense: MIT\nBy: Rich Harris\nRepository: git+https://github.com/Rich-Harris/magic-string.git\n\n>
     Copyright 2018 Rich Harris\n> \n> Permission is hereby granted, free of charge,
     to any person obtaining a copy of this software and associated documentation files
     (the \"Software\"), to deal in the Software without restriction, including without
