@@ -42,6 +42,8 @@ ignored:
     - '@rollup/rollup-win32-ia32-msvc'
     - '@rollup/rollup-win32-x64-gnu'
     - '@rollup/rollup-win32-x64-msvc'
+    # Optional platform binary used by @github/local-action.
+    - '@napi-rs/lzma-linux-x64-gnu'
     - 'fsevents'
     - 'mime-db'
     - 'mime-types'
