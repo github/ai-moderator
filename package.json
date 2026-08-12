@@ -27,7 +27,7 @@
     "@actions/github": "^9.0.0",
     "@rollup/plugin-json": "^6.1.0",
     "@types/js-yaml": "^4.0.9",
-    "js-yaml": "^5.2.2",
+    "js-yaml": "^5.2.3",
     "openai": "^7.4.0"
   },
   "devDependencies": {
