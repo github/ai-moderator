@@ -60,6 +60,12 @@
     "@rollup/rollup-linux-x64-gnu": "*"
   },
   "overrides": {
+    "@actions/github@6.0.1": {
+      "undici": "6.28.0"
+    },
+    "@actions/github@7.0.0": {
+      "undici": "6.28.0"
+    },
     "@typescript-eslint/typescript-estree@6.21.0": {
       "minimatch": "9.0.9"
     }
