@@ -20,6 +20,12 @@ export function extractFromEvent(context: typeof github.context): ContentInfo {
     content = `${context.payload.issue?.title}\n${context.payload.issue?.body}`
     issueNumber = context.payload.issue?.number ?? null
   } else if (
+    (event === 'pull_request' || event === 'pull_request_target') &&
+    context.payload.action === 'opened'
+  ) {
+    content = `${context.payload.pull_request?.title}\n${context.payload.pull_request?.body}`
+    issueNumber = context.payload.pull_request?.number ?? null
+  } else if (
     event === 'issue_comment' &&
     context.payload.action === 'created'
   ) {
@@ -50,6 +56,8 @@ export function shouldProcess(context: typeof github.context): boolean {
 
   return (
     (event === 'issues' && context.payload.action === 'opened') ||
+    ((event === 'pull_request' || event === 'pull_request_target') &&
+      context.payload.action === 'opened') ||
     (event === 'issue_comment' && context.payload.action === 'created') ||
     (event === 'pull_request_review_comment' &&
       context.payload.action === 'created')
