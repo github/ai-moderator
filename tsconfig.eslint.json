@@ -3,7 +3,8 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "allowJs": true,
-    "noEmit": true
+    "noEmit": true,
+    "rootDir": "."
   },
   "exclude": ["dist", "node_modules"],
   "include": [
